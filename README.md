@@ -1,2 +1,1 @@
-# ai-eshop-agent
-agent ai shop
+index.html
