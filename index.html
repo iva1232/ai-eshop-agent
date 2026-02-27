@@ -884,6 +884,19 @@ body {
 </div><!-- /main -->
 
 <script>
+// ── API Key helpers (defined first) ───
+function setConnected(on) {
+  const dot = document.getElementById('statusDot');
+  const txt = document.getElementById('statusText');
+  if (on) {
+    dot.classList.add('connected');
+    txt.textContent = 'Connected ✓';
+  } else {
+    dot.classList.remove('connected');
+    txt.textContent = 'No API key';
+  }
+}
+
 // ── State ─────────────────────────────
 let apiKey = localStorage.getItem('dropai_key') || '';
 if (apiKey) {
@@ -891,26 +904,30 @@ if (apiKey) {
   setConnected(true);
 }
 
-// ── API Key ───────────────────────────
+// ── API Key button ─────────────────────
 document.getElementById('saveApiKey').addEventListener('click', () => {
   const val = document.getElementById('apiKeyInput').value.trim();
-  if (!val) return;
+  if (!val) {
+    alert('Please paste your API key first (starts with sk-ant-...)');
+    return;
+  }
+  if (!val.startsWith('sk-ant-')) {
+    alert('That doesn\'t look like a valid Claude API key. It should start with sk-ant-...');
+    return;
+  }
   apiKey = val;
   localStorage.setItem('dropai_key', val);
   setConnected(true);
+  const btn = document.getElementById('saveApiKey');
+  btn.textContent = 'Connected ✓';
+  btn.style.background = '#43e8a0';
+  btn.style.color = '#0c0e14';
+  setTimeout(() => {
+    btn.textContent = 'Connect';
+    btn.style.background = '';
+    btn.style.color = '';
+  }, 2000);
 });
-
-function setConnected(on) {
-  const dot = document.getElementById('statusDot');
-  const txt = document.getElementById('statusText');
-  if (on) {
-    dot.classList.add('connected');
-    txt.textContent = 'Connected';
-  } else {
-    dot.classList.remove('connected');
-    txt.textContent = 'No API key';
-  }
-}
 
 // ── Navigation ────────────────────────
 const titles = {
