@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DropAI — Shopify Business Dashboard</title>
+
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+:root {
+  --bg: #0c0e14;
+  --surface: #13161f;
+  --surface2: #1a1e2a;
+  --border: #252936;
+  --accent: #6c63ff;
+  --accent2: #ff6584;
+  --accent3: #43e8a0;
+  --text: #e8eaf2;
+  --muted: #6b7280;
+  --muted2: #9ca3af;
+  --success: #43e8a0;
+  --warning: #fbbf24;
+  --danger: #f87171;
+  --card-glow: 0 0 0 1px #252936, 0 4px 24px rgba(108,99,255,0.08);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { background: #0c0e14; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', 'Segoe UI', system-ui, sans-serif;
+  min-height: 100vh;
+  display: flex;
+}
+
+/* ── Sidebar ── */
+.sidebar {
+  width: 240px;
+  min-height: 100vh;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 24px 0;
+  position: fixed;
+  left: 0; top: 0; bottom: 0;
+  z-index: 50;
+}
+
+.logo {
+  padding: 0 24px 28px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+
+.logo-text {
+  font-family: 'Syne', 'Segoe UI', system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 22px;
+  background: linear-gradient(135deg, #6c63ff, #ff6584);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.5px;
+}
+
+.logo-sub {
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 24px;
+  cursor: pointer;
+  color: var(--muted2);
+  font-size: 14px;
+  font-weight: 500;
+  border-left: 3px solid transparent;
+  transition: all 0.2s;
+  margin: 1px 0;
+}
+
+.nav-item:hover { color: var(--text); background: rgba(108,99,255,0.06); }
+
+.nav-item.active {
+  color: var(--accent);
+  background: rgba(108,99,255,0.1);
+  border-left-color: var(--accent);
+}
+
+.nav-icon { font-size: 18px; width: 22px; text-align: center; }
+
+.nav-label { font-family: 'Syne', 'Segoe UI', system-ui, sans-serif; font-size: 13px; font-weight: 600; }
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+}
+
+.api-status {
+  font-size: 11px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.status-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--muted);
+}
+
+.status-dot.connected { background: var(--success); box-shadow: 0 0 6px var(--success); }
+
+/* ── Main ── */
+.main {
+  margin-left: 240px;
+  flex: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  padding: 20px 32px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+.topbar-title {
+  font-family: 'Syne', 'Segoe UI', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+}
+
+.topbar-sub {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.api-key-zone {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.api-input {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-family: 'DM Sans', 'Segoe UI', system-ui, sans-serif;
+  font-size: 13px;
+  width: 220px;
+  transition: border-color 0.2s;
+  outline: none;
+}
+
+.api-input:focus { border-color: var(--accent); }
+
+.api-input::placeholder { color: var(--muted); }
+
+.btn-save {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-family: 'Syne', 'Segoe UI', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.btn-save:hover { background: #5a52e0; transform: translateY(-1px); }
+
+/* ── Content ── */
+.content {
+  flex: 1;
+  padding: 32px;
+  max-width: 900px;
+}
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ── Cards ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px;
+  margin-bottom: 20px;
+  box-shadow: var(--card-glow);
+}
+
+.card-title {
+  font-family: 'Syne', 'Segoe UI', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.card-desc {
+  font-size: 13px;
+  color: var(--muted2);
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+/* ── Form Elements ── */
+.form-group { margin-bottom: 16px; }
+
+.form-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted2);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  font-family: 'Syne', 'Segoe UI', system-ui, sans-serif;
+}
+
+.form-input, .form-textarea, .form-select {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-family: 'DM Sans', 'Segoe UI', system-ui, sans-serif;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  resize: none;
+}
+
+.form-input:focus, .form-textarea:focus, .form-select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(108,99,255,0.12);
+}
+
+.form-input::placeholder, .form-textarea::placeholder { color: var(--muted); }
+
+.form-select option { background: var(--surface); }
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* ── Buttons ── */
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), #8b85ff);
+  color: #fff;
+  border: none;
+  padding: 13px 28px;
+  border-radius: 10px;
+  font-family: 'Syne', 'Segoe UI', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  letter-spacing: 0.3px;
+}
+
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(108,99,255,0.3); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+.btn-secondary {
+  background: var(--surface2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-family: 'Syne', 'Segoe UI', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover { background: var(--border); }
+
+/* ── Tags / Chips ── */
+.tag {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: 'Syne', 'Segoe UI', system-ui, sans-serif;
+  letter-spacing: 0.5px;
+}
+
+.tag-purple { background: rgba(108,99,255,0.15); color: #a78bfa; }
+.tag-green { background: rgba(67,232,160,0.12); color: var(--success); }
+.tag-red { background: rgba(248,113,113,0.12); color: var(--danger); }
+.tag-yellow { background: rgba(251,191,36,0.12); color: var(--warning); }
+.tag-pink { background: rgba(255,101,132,0.12); color: var(--accent2); }
+
+/* ── Result output ── */
+.result-box {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 20px;
+  display: none;
+  position: relative;
+}
+
+.result-box.visible { display: block; }
+
+.result-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.result-title {
+  font-family: 'Syne', 'Segoe UI', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.copy-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--muted2);
+  padding: 5px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'DM Sans', 'Segoe UI', system-ui, sans-serif;
+}
+
+.copy-btn:hover { color: var(--text); border-color: var(--accent); }
+.copy-btn.copied { color: var(--success); border-color: var(--success); }
+
+.result-content {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--text);
+  white-space: pre-wrap;
+}
+
+/* Product cards */
+.product-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.product-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+  transition: border-color 0.2s, transform 0.2s;
+  cursor: default;
+}
+
+.product-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+
+.product-name {
+  font-family: 'Syne', 'Segoe UI', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.product-meta {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.product-desc {
+  font-size: 12px;
+  color: var(--muted2);
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.product-profit {
+  font-family: 'Syne', 'Segoe UI', system-ui, sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--success);
+}
+
+.product-profit-label {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* Loading spinner */
+.spinner {
+  display: inline-block;
+  width: 18px; height: 18px;
+  border: 2px solid rgba(255,255,255,0.2);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Stats bar on Home ── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+
+.stat-card.purple::before { background: linear-gradient(90deg, var(--accent), transparent); }
+.stat-card.green::before { background: linear-gradient(90deg, var(--success), transparent); }
+.stat-card.pink::before { background: linear-gradient(90deg, var(--accent2), transparent); }
+
+.stat-number {
+  font-family: 'Syne', 'Segoe UI', system-ui, sans-serif;
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.stat-label { font-size: 12px; color: var(--muted2); }
+
+/* Alert / tip box */
+.tip-box {
+  background: rgba(108,99,255,0.07);
+  border: 1px solid rgba(108,99,255,0.2);
+  border-radius: 10px;
+  padding: 14px 18px;
+  font-size: 13px;
+  color: var(--muted2);
+  line-height: 1.6;
+  margin-bottom: 20px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.tip-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+
+/* Divider */
+.divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 24px 0;
+}
+
+/* Checklist */
+.checklist { list-style: none; }
+.checklist li {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  line-height: 1.5;
+}
+
+.checklist li:last-child { border-bottom: none; }
+.check-num {
+  background: rgba(108,99,255,0.15);
+  color: var(--accent);
+  font-family: 'Syne', 'Segoe UI', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .sidebar { width: 60px; }
+  .nav-label, .logo-sub, .logo-text span, .sidebar-footer { display: none; }
+  .logo-text { font-size: 16px; }
+  .main { margin-left: 60px; }
+  .product-grid { grid-template-columns: 1fr; }
+  .form-row { grid-template-columns: 1fr; }
+  .stats-grid { grid-template-columns: 1fr; }
+  .api-key-zone { display: none; }
+  .content { padding: 20px; }
+}
+
+.error-box {
+  background: rgba(248,113,113,0.08);
+  border: 1px solid rgba(248,113,113,0.2);
+  border-radius: 10px;
+  padding: 14px 18px;
+  font-size: 13px;
+  color: var(--danger);
+  margin-top: 16px;
+  display: none;
+}
+
+.error-box.visible { display: block; }
+
+.streaming-cursor::after {
+  content: '▌';
+  animation: blink 1s step-end infinite;
+  color: var(--accent);
+}
+
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+</style>
+</head>
+<body>
+
+<!-- ── Sidebar ── -->
+<nav class="sidebar">
+  <div class="logo">
+    <div class="logo-text">DropAI</div>
+    <div class="logo-sub">Shopify Assistant</div>
+  </div>
+
+  <div class="nav-item active" data-tab="home">
+    <span class="nav-icon">🏠</span>
+    <span class="nav-label">Home</span>
+  </div>
+  <div class="nav-item" data-tab="research">
+    <span class="nav-icon">🔍</span>
+    <span class="nav-label">Product Research</span>
+  </div>
+  <div class="nav-item" data-tab="listings">
+    <span class="nav-icon">📝</span>
+    <span class="nav-label">Listing Writer</span>
+  </div>
+  <div class="nav-item" data-tab="support">
+    <span class="nav-icon">💬</span>
+    <span class="nav-label">Customer Support</span>
+  </div>
+  <div class="nav-item" data-tab="guide">
+    <span class="nav-icon">🗺️</span>
+    <span class="nav-label">Start Guide</span>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="api-status">
+      <div class="status-dot" id="statusDot"></div>
+      <span id="statusText">No API key</span>
+    </div>
+  </div>
+</nav>
+
+<!-- ── Main ── -->
+<div class="main">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title" id="topbarTitle">Dashboard</div>
+      <div class="topbar-sub" id="topbarSub">Your AI-powered Shopify business assistant</div>
+    </div>
+    <div class="api-key-zone">
+      <input type="password" class="api-input" id="apiKeyInput" placeholder="Paste your Claude API key..." />
+      <button class="btn-save" id="saveApiKey">Connect</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ── HOME ── -->
+    <div class="tab-panel active" id="tab-home">
+      <div class="stats-grid">
+        <div class="stat-card purple">
+          <div class="stat-number">3</div>
+          <div class="stat-label">AI Tools Ready</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-number">$0</div>
+          <div class="stat-label">Startup Cost</div>
+        </div>
+        <div class="stat-card pink">
+          <div class="stat-number">∞</div>
+          <div class="stat-label">Products to Find</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">👋 Welcome to DropAI</div>
+        <div class="card-desc">Your personal AI business assistant for running a dropshipping store on Shopify. Connect your Claude API key above to unlock all features — it costs less than $0.01 per use.</div>
+
+        <div class="tip-box">
+          <span class="tip-icon">⚡</span>
+          <span><strong style="color:var(--text)">Quick start:</strong> Paste your Claude API key in the top right, click Connect, then head to <strong style="color:var(--text)">Product Research</strong> to find your first winning product idea.</span>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;" onclick="switchTab('research')">
+            <div style="font-size:28px;margin-bottom:8px;">🔍</div>
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:4px;">Product Research</div>
+            <div style="font-size:12px;color:var(--muted2);">Find trending dropship products with profit estimates</div>
+          </div>
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;" onclick="switchTab('listings')">
+            <div style="font-size:28px;margin-bottom:8px;">📝</div>
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:4px;">Listing Writer</div>
+            <div style="font-size:12px;color:var(--muted2);">Generate full Shopify product pages instantly</div>
+          </div>
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;" onclick="switchTab('support')">
+            <div style="font-size:28px;margin-bottom:8px;">💬</div>
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:4px;">Customer Support</div>
+            <div style="font-size:12px;color:var(--muted2);">AI-drafted replies to any customer message</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">💡 How to get a free Claude API Key</div>
+        <ul class="checklist">
+          <li><span class="check-num">1</span><span>Go to <strong style="color:var(--accent)">console.anthropic.com</strong> and create a free account</span></li>
+          <li><span class="check-num">2</span><span>Click <strong>"Get API Keys"</strong> in the left sidebar</span></li>
+          <li><span class="check-num">3</span><span>Click <strong>"Create Key"</strong>, give it a name like "DropAI"</span></li>
+          <li><span class="check-num">4</span><span>Copy the key (starts with <code style="background:var(--bg);padding:2px 6px;border-radius:4px;font-size:12px;">sk-ant-...</code>)</span></li>
+          <li><span class="check-num">5</span><span>Paste it in the <strong>top right</strong> of this page and click Connect</span></li>
+          <li><span class="check-num">6</span><span>Anthropic gives new accounts free credits — enough for hundreds of uses</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ── PRODUCT RESEARCH ── -->
+    <div class="tab-panel" id="tab-research">
+      <div class="card">
+        <div class="card-title">🔍 Product Research Engine</div>
+        <div class="card-desc">Describe a niche, audience, or interest and the AI will generate 4 winning product ideas with AliExpress sourcing tips, estimated profit margins, and organic content angles for TikTok/Instagram.</div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Niche or Audience</label>
+            <input type="text" class="form-input" id="researchNiche" placeholder="e.g. pet owners, gym beginners, new moms..." />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Trending Platform</label>
+            <select class="form-select" id="researchPlatform">
+              <option value="TikTok">TikTok (viral potential)</option>
+              <option value="Instagram Reels">Instagram Reels</option>
+              <option value="Pinterest">Pinterest</option>
+              <option value="YouTube Shorts">YouTube Shorts</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Extra context (optional)</label>
+          <input type="text" class="form-input" id="researchContext" placeholder="e.g. under $30, solves a problem, visually satisfying..." />
+        </div>
+
+        <button class="btn-primary" id="researchBtn" onclick="runResearch()">
+          <span>🔍 Find Winning Products</span>
+        </button>
+
+        <div class="error-box" id="researchError"></div>
+
+        <div id="productResults"></div>
+      </div>
+    </div>
+
+    <!-- ── LISTING WRITER ── -->
+    <div class="tab-panel" id="tab-listings">
+      <div class="card">
+        <div class="card-title">📝 Shopify Listing Generator</div>
+        <div class="card-desc">Enter a product name and details — the AI writes a complete, conversion-optimized Shopify listing: title, description, bullet points, and SEO meta tags. Ready to copy-paste.</div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Product Name</label>
+            <input type="text" class="form-input" id="listingProduct" placeholder="e.g. Posture Corrector Brace..." />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Target Audience</label>
+            <input type="text" class="form-input" id="listingAudience" placeholder="e.g. office workers with back pain..." />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Key Features (comma separated)</label>
+            <input type="text" class="form-input" id="listingFeatures" placeholder="e.g. adjustable, lightweight, breathable..." />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Your Selling Price</label>
+            <input type="text" class="form-input" id="listingPrice" placeholder="e.g. $29.99" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Brand / Store Name</label>
+          <input type="text" class="form-input" id="listingBrand" placeholder="e.g. PurePosture, or leave blank" />
+        </div>
+
+        <button class="btn-primary" id="listingBtn" onclick="runListing()">
+          <span>✍️ Generate Full Listing</span>
+        </button>
+
+        <div class="error-box" id="listingError"></div>
+
+        <div class="result-box" id="listingResult">
+          <div class="result-header">
+            <div class="result-title">✅ Shopify Listing Ready</div>
+            <button class="copy-btn" onclick="copyResult('listingContent', this)">Copy All</button>
+          </div>
+          <div class="result-content" id="listingContent"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CUSTOMER SUPPORT ── -->
+    <div class="tab-panel" id="tab-support">
+      <div class="card">
+        <div class="card-title">💬 Customer Support AI</div>
+        <div class="card-desc">Paste any customer message — angry, confused, asking for a refund, asking about shipping. Get a professional, empathetic reply drafted in seconds that you can send directly.</div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Your Store Name</label>
+            <input type="text" class="form-input" id="supportStore" placeholder="e.g. TrendVault" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Message Type</label>
+            <select class="form-select" id="supportType">
+              <option value="general inquiry">General Inquiry</option>
+              <option value="angry complaint">Angry Complaint</option>
+              <option value="refund request">Refund Request</option>
+              <option value="shipping delay question">Shipping Delay</option>
+              <option value="wrong item received">Wrong Item</option>
+              <option value="product not working">Product Issue</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Customer Message</label>
+          <textarea class="form-textarea" id="supportMessage" rows="5" placeholder="Paste the customer's message here..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Additional context (optional)</label>
+          <input type="text" class="form-input" id="supportContext" placeholder="e.g. their order arrived 2 days late, we can offer 10% refund..." />
+        </div>
+
+        <button class="btn-primary" id="supportBtn" onclick="runSupport()">
+          <span>💬 Generate Reply</span>
+        </button>
+
+        <div class="error-box" id="supportError"></div>
+
+        <div class="result-box" id="supportResult">
+          <div class="result-header">
+            <div class="result-title">✅ Customer Reply Ready</div>
+            <button class="copy-btn" onclick="copyResult('supportContent', this)">Copy</button>
+          </div>
+          <div class="result-content" id="supportContent"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📋 Reply Tone Guide</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px;">
+          <div style="background:var(--bg);padding:14px;border-radius:10px;border:1px solid var(--border)">
+            <div style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:6px;color:var(--success)">✅ Always do</div>
+            <div style="color:var(--muted2);line-height:1.8">Acknowledge their frustration<br>Apologize sincerely<br>Offer a clear solution<br>Set realistic expectations<br>End on a positive note</div>
+          </div>
+          <div style="background:var(--bg);padding:14px;border-radius:10px;border:1px solid var(--border)">
+            <div style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:6px;color:var(--danger)">❌ Never do</div>
+            <div style="color:var(--muted2);line-height:1.8">Argue or get defensive<br>Make promises you can't keep<br>Use template-sounding language<br>Ignore the core complaint<br>Reply in under 2 hours (looks desperate)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── START GUIDE ── -->
+    <div class="tab-panel" id="tab-guide">
+      <div class="card">
+        <div class="card-title">🗺️ Your $0 Dropshipping Roadmap</div>
+        <div class="card-desc">A step-by-step guide to launching your first Shopify dropshipping store with organic traffic only. Follow these in order.</div>
+
+        <ul class="checklist">
+          <li><span class="check-num">1</span><div><strong>Use Product Research (this app)</strong> to find 3–5 product ideas in a niche you're interested in. Look for products that are visual, solve a real problem, and have a "wow" factor.</div></li>
+          <li><span class="check-num">2</span><div><strong>Source from AliExpress or CJDropshipping.</strong> Search the product, filter by orders (10,000+) and rating (4.5+). Aim to sell at 3–5x the supplier cost.</div></li>
+          <li><span class="check-num">3</span><div><strong>Create your Shopify store.</strong> Use Shopify's free trial at shopify.com. Pick a clean theme (Dawn is free and great). Name your store something simple and brandable.</div></li>
+          <li><span class="check-num">4</span><div><strong>Install DSers (free app)</strong> from the Shopify App Store. It connects your AliExpress products to your store and automates order fulfillment.</div></li>
+          <li><span class="check-num">5</span><div><strong>Use Listing Writer (this app)</strong> to generate your product descriptions, copy them into Shopify. Upload 5–8 product images from AliExpress (you're allowed to use their photos).</div></li>
+          <li><span class="check-num">6</span><div><strong>Set up TikTok or Instagram.</strong> Create an account with your store name. Post 1–3 short videos per day showing the product. Use trending sounds. You don't need to show your face.</div></li>
+          <li><span class="check-num">7</span><div><strong>Content formula that converts:</strong> Hook (0–2s) → Problem → Product as solution → Call to action ("Link in bio"). Keep videos 15–30 seconds.</div></li>
+          <li><span class="check-num">8</span><div><strong>First sale typically comes in 1–3 weeks</strong> of consistent posting. Once you find a video that performs (50K+ views), run more content like that. Don't change products too fast.</div></li>
+          <li><span class="check-num">9</span><div><strong>Use Customer Support (this app)</strong> to handle all incoming messages. Respond within 24 hours. Happy customers = reviews = more sales.</div></li>
+          <li><span class="check-num">10</span><div><strong>Scale what works.</strong> When one product hits $500/month, reinvest $100 into TikTok Spark Ads to boost your best organic video. This is how $0 stores start paying for themselves.</div></li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-title">💰 Realistic Income Timeline</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;font-size:12px;">
+          <div style="background:var(--bg);padding:14px;border-radius:10px;border:1px solid var(--border);text-align:center;">
+            <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:var(--muted2);">Month 1</div>
+            <div style="color:var(--warning);font-weight:600;margin:6px 0;">$0 – $200</div>
+            <div style="color:var(--muted);line-height:1.5">Store setup, finding your product, first few sales</div>
+          </div>
+          <div style="background:var(--bg);padding:14px;border-radius:10px;border:1px solid var(--border);text-align:center;">
+            <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:var(--muted2);">Month 2</div>
+            <div style="color:var(--warning);font-weight:600;margin:6px 0;">$200 – $800</div>
+            <div style="color:var(--muted);line-height:1.5">Consistent posting, building an audience</div>
+          </div>
+          <div style="background:var(--bg);padding:14px;border-radius:10px;border:1px solid var(--border);text-align:center;">
+            <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:var(--muted2);">Month 3</div>
+            <div style="color:var(--success);font-weight:600;margin:6px 0;">$500 – $2K</div>
+            <div style="color:var(--muted);line-height:1.5">One viral video can change everything</div>
+          </div>
+          <div style="background:var(--bg);padding:14px;border-radius:10px;border:1px solid var(--border);text-align:center;">
+            <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:var(--muted2);">Month 6+</div>
+            <div style="color:var(--success);font-weight:600;margin:6px 0;">$2K – $10K+</div>
+            <div style="color:var(--muted);line-height:1.5">Reinvesting in ads, multiple products</div>
+          </div>
+        </div>
+        <div class="tip-box" style="margin-top:16px;margin-bottom:0;">
+          <span class="tip-icon">⚠️</span>
+          <span style="color:var(--muted2)">These are realistic ranges, not guarantees. Success depends on product choice, content quality, and consistency. Most stores that fail do so because the owner gives up within 30 days. The ones that make money are the ones still posting in month 3.</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<script>
+// ── State ─────────────────────────────
+let apiKey = localStorage.getItem('dropai_key') || '';
+if (apiKey) {
+  document.getElementById('apiKeyInput').value = apiKey;
+  setConnected(true);
+}
+
+// ── API Key ───────────────────────────
+document.getElementById('saveApiKey').addEventListener('click', () => {
+  const val = document.getElementById('apiKeyInput').value.trim();
+  if (!val) return;
+  apiKey = val;
+  localStorage.setItem('dropai_key', val);
+  setConnected(true);
+});
+
+function setConnected(on) {
+  const dot = document.getElementById('statusDot');
+  const txt = document.getElementById('statusText');
+  if (on) {
+    dot.classList.add('connected');
+    txt.textContent = 'Connected';
+  } else {
+    dot.classList.remove('connected');
+    txt.textContent = 'No API key';
+  }
+}
+
+// ── Navigation ────────────────────────
+const titles = {
+  home: ['Dashboard', 'Your AI-powered Shopify business assistant'],
+  research: ['Product Research', 'Find trending dropship products with profit estimates'],
+  listings: ['Listing Writer', 'Generate complete Shopify product listings instantly'],
+  support: ['Customer Support', 'AI-drafted replies for any customer message'],
+  guide: ['Start Guide', 'Step-by-step roadmap to your first $1,000'],
+};
+
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => switchTab(item.dataset.tab));
+});
+
+function switchTab(tab) {
+  document.querySelectorAll('.nav-item').forEach(i => i.classList.toggle('active', i.dataset.tab === tab));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tab-' + tab));
+  const [t, s] = titles[tab] || ['Dashboard', ''];
+  document.getElementById('topbarTitle').textContent = t;
+  document.getElementById('topbarSub').textContent = s;
+}
+
+// ── Claude API call ───────────────────
+async function callClaude(prompt, systemPrompt) {
+  if (!apiKey) throw new Error('Please connect your Claude API key first (top right).');
+
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1500,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: prompt }],
+    })
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err?.error?.message || `API error ${res.status}`);
+  }
+
+  const data = await res.json();
+  return data.content.map(b => b.text || '').join('');
+}
+
+// ── Set btn loading ───────────────────
+function setLoading(btnId, loading, originalHTML) {
+  const btn = document.getElementById(btnId);
+  if (loading) {
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Thinking...';
+  } else {
+    btn.disabled = false;
+    btn.innerHTML = originalHTML;
+  }
+}
+
+function showError(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = '⚠️ ' + msg;
+  el.classList.add('visible');
+}
+
+function clearError(id) {
+  const el = document.getElementById(id);
+  el.textContent = '';
+  el.classList.remove('visible');
+}
+
+// ── PRODUCT RESEARCH ─────────────────
+async function runResearch() {
+  clearError('researchError');
+  const niche = document.getElementById('researchNiche').value.trim();
+  const platform = document.getElementById('researchPlatform').value;
+  const context = document.getElementById('researchContext').value.trim();
+
+  if (!niche) { showError('researchError', 'Please enter a niche or audience.'); return; }
+
+  setLoading('researchBtn', true, '🔍 Find Winning Products');
+
+  const system = `You are an expert dropshipping product researcher. You find winning products that sell well organically on social media. 
+You respond ONLY with valid JSON — an array of exactly 4 product objects with these fields:
+- name (string): Product name
+- category (string): Short category tag
+- supplierCost (string): AliExpress estimated cost range e.g. "$3-6"
+- sellPrice (string): Recommended sell price e.g. "$24.99"
+- profitMargin (string): Estimated profit margin % e.g. "65-75%"
+- estimatedProfit (string): Profit per sale e.g. "$16-19"
+- hook (string): One compelling sentence about why this goes viral
+- contentAngle (string): Best content angle for the platform
+- tags (array of 3 strings): category tags like ["trending","problem-solver","visual"]
+- supplierTip (string): Where/how to source this on AliExpress or CJDropshipping`;
+
+  const prompt = `Find 4 winning dropshipping products for this niche: "${niche}"
+Platform focus: ${platform}
+${context ? 'Extra requirements: ' + context : ''}
+Products should be visually appealing, solve a real problem, have good organic content potential on ${platform}, and have strong profit margins (60%+). Focus on products that are currently trending or have proven demand.`;
+
+  try {
+    const raw = await callClaude(prompt, system);
+    const clean = raw.replace(/```json|```/g, '').trim();
+    const products = JSON.parse(clean);
+    renderProducts(products);
+  } catch (e) {
+    showError('researchError', e.message);
+  }
+
+  setLoading('researchBtn', false, '🔍 Find Winning Products');
+}
+
+function renderProducts(products) {
+  const container = document.getElementById('productResults');
+  container.innerHTML = `<div class="product-grid">${products.map(p => `
+    <div class="product-card">
+      <div class="product-meta">
+        ${p.tags.map(t => `<span class="tag tag-purple">${t}</span>`).join('')}
+      </div>
+      <div class="product-name">${p.name}</div>
+      <div class="product-desc">${p.hook}</div>
+      <div style="display:flex;gap:16px;margin-bottom:12px;">
+        <div>
+          <div class="product-profit">${p.estimatedProfit}</div>
+          <div class="product-profit-label">profit/sale</div>
+        </div>
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:16px;color:var(--text)">${p.profitMargin}</div>
+          <div class="product-profit-label">margin</div>
+        </div>
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:16px;color:var(--text)">${p.sellPrice}</div>
+          <div class="product-profit-label">sell price</div>
+        </div>
+      </div>
+      <div style="background:var(--bg);border-radius:8px;padding:10px;font-size:12px;color:var(--muted2);margin-bottom:10px;line-height:1.5;">
+        <strong style="color:var(--accent3);">📱 Content angle:</strong> ${p.contentAngle}
+      </div>
+      <div style="font-size:12px;color:var(--muted2);line-height:1.5;">
+        <strong style="color:var(--muted);">Source:</strong> ${p.supplierTip}
+      </div>
+      <div style="margin-top:8px;font-size:12px;color:var(--muted);">Cost: ${p.supplierCost} → Sell: ${p.sellPrice}</div>
+    </div>
+  `).join('')}</div>`;
+}
+
+// ── LISTING WRITER ────────────────────
+async function runListing() {
+  clearError('listingError');
+  const product = document.getElementById('listingProduct').value.trim();
+  const audience = document.getElementById('listingAudience').value.trim();
+  const features = document.getElementById('listingFeatures').value.trim();
+  const price = document.getElementById('listingPrice').value.trim();
+  const brand = document.getElementById('listingBrand').value.trim();
+
+  if (!product) { showError('listingError', 'Please enter a product name.'); return; }
+
+  setLoading('listingBtn', true, '✍️ Generate Full Listing');
+
+  const system = `You are an expert Shopify copywriter who writes high-converting product listings. 
+Your listings are SEO-optimized, emotionally compelling, and designed to convert cold traffic.
+Write in a clear, benefit-focused style. Use formatting with headers and bullet points.`;
+
+  const prompt = `Write a complete Shopify product listing for:
+
+Product: ${product}
+${audience ? 'Target audience: ' + audience : ''}
+${features ? 'Key features: ' + features : ''}
+${price ? 'Price: ' + price : ''}
+${brand ? 'Brand: ' + brand : ''}
+
+Include ALL of the following sections, clearly labeled:
+
+**PRODUCT TITLE** (SEO optimized, under 70 chars)
+
+**SHORT DESCRIPTION** (2-3 sentences, goes in Shopify's excerpt/subtitle field)
+
+**MAIN DESCRIPTION** (3-4 paragraphs, emotionally engaging, benefit-focused)
+
+**KEY FEATURES** (6 bullet points, starting with the benefit, then the feature)
+
+**WHO IT'S PERFECT FOR** (3 bullet points describing ideal customer scenarios)
+
+**SEO META TITLE** (under 60 chars)
+
+**SEO META DESCRIPTION** (under 160 chars, includes a call to action)
+
+**TAGS** (10 comma-separated Shopify tags for discoverability)`;
+
+  try {
+    const result = await callClaude(prompt, system);
+    document.getElementById('listingContent').textContent = result;
+    document.getElementById('listingResult').classList.add('visible');
+  } catch (e) {
+    showError('listingError', e.message);
+  }
+
+  setLoading('listingBtn', false, '✍️ Generate Full Listing');
+}
+
+// ── CUSTOMER SUPPORT ──────────────────
+async function runSupport() {
+  clearError('supportError');
+  const store = document.getElementById('supportStore').value.trim();
+  const type = document.getElementById('supportType').value;
+  const message = document.getElementById('supportMessage').value.trim();
+  const context = document.getElementById('supportContext').value.trim();
+
+  if (!message) { showError('supportError', 'Please paste the customer message.'); return; }
+
+  setLoading('supportBtn', true, '💬 Generate Reply');
+
+  const system = `You are a professional customer support specialist for a Shopify dropshipping store. 
+You write empathetic, professional, and solution-focused replies that turn unhappy customers into loyal ones.
+Your tone is warm, human, and genuine — never robotic or template-sounding.
+Always acknowledge feelings first, then provide a clear solution.`;
+
+  const prompt = `Write a professional customer support reply for this ${type}:
+
+Store name: ${store || 'our store'}
+Message type: ${type}
+Customer message: "${message}"
+${context ? 'Additional context: ' + context : ''}
+
+The reply should:
+- Be 150-250 words
+- Start by addressing the customer by name if possible or "Hi there"
+- Acknowledge their specific concern with empathy
+- Provide a clear, actionable solution
+- Set realistic expectations
+- End with a warm, positive closing
+- Feel genuine and personal, not like a template
+- Include your name as "The ${store || 'Support'} Team" in the sign-off`;
+
+  try {
+    const result = await callClaude(prompt, system);
+    document.getElementById('supportContent').textContent = result;
+    document.getElementById('supportResult').classList.add('visible');
+  } catch (e) {
+    showError('supportError', e.message);
+  }
+
+  setLoading('supportBtn', false, '💬 Generate Reply');
+}
+
+// ── Copy ──────────────────────────────
+function copyResult(contentId, btn) {
+  const text = document.getElementById(contentId).textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = '✓ Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 2000);
+  });
+}
+</script>
+</body>
+</html>
