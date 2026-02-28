@@ -4,10 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DropAI — Shopify Business Dashboard</title>
-
-
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+
 :root {
   --bg: #0c0e14;
   --surface: #13161f;
@@ -22,18 +21,343 @@
   --success: #43e8a0;
   --warning: #fbbf24;
   --danger: #f87171;
-  --card-glow: 0 0 0 1px #252936, 0 4px 24px rgba(108,99,255,0.08);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
+html { background: var(--bg); }
 
-html { background: #0c0e14; }
 body {
   background: var(--bg);
   color: var(--text);
   font-family: 'DM Sans', 'Segoe UI', system-ui, sans-serif;
   min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ════════════════════════════════════════
+   LOGIN SCREEN
+   ════════════════════════════════════════ */
+#loginScreen {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
   display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+#loginScreen.exit {
+  opacity: 0;
+  transform: scale(1.04);
+  pointer-events: none;
+}
+
+/* Animated mesh background */
+.login-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  animation: float 8s ease-in-out infinite;
+}
+
+.orb-1 {
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(108,99,255,0.25), transparent 70%);
+  top: -150px; left: -100px;
+  animation-delay: 0s;
+}
+
+.orb-2 {
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(255,101,132,0.2), transparent 70%);
+  bottom: -100px; right: -80px;
+  animation-delay: -3s;
+}
+
+.orb-3 {
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(67,232,160,0.15), transparent 70%);
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  animation-delay: -5s;
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -20px) scale(1.05); }
+  66% { transform: translate(-20px, 15px) scale(0.97); }
+}
+
+/* Grid lines */
+.login-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(108,99,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(108,99,255,0.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* Login card */
+.login-card {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 460px;
+  padding: 0 24px;
+}
+
+.login-logo {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.login-logo-text {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 52px;
+  letter-spacing: -2px;
+  background: linear-gradient(135deg, #fff 0%, #a5b4fc 50%, #6c63ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+}
+
+.login-logo-sub {
+  font-size: 14px;
+  color: var(--muted2);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-top: 8px;
+  font-family: 'Syne', sans-serif;
+}
+
+.login-tagline {
+  text-align: center;
+  font-size: 15px;
+  color: var(--muted2);
+  margin-bottom: 40px;
+  line-height: 1.6;
+}
+
+.login-tagline strong { color: var(--text); }
+
+.login-box {
+  background: rgba(19, 22, 31, 0.8);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px;
+  padding: 32px;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(108,99,255,0.1);
+}
+
+.login-label {
+  font-family: 'Syne', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted2);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.login-input {
+  width: 100%;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: var(--text);
+  padding: 14px 18px;
+  border-radius: 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  outline: none;
+  transition: all 0.3s;
+  letter-spacing: 1px;
+}
+
+.login-input:focus {
+  border-color: rgba(108,99,255,0.6);
+  background: rgba(108,99,255,0.06);
+  box-shadow: 0 0 0 4px rgba(108,99,255,0.1);
+}
+
+.login-input::placeholder { color: var(--muted); letter-spacing: 0; }
+
+.login-btn {
+  width: 100%;
+  margin-top: 16px;
+  padding: 15px;
+  background: linear-gradient(135deg, #6c63ff, #8b85ff);
+  border: none;
+  border-radius: 12px;
+  color: #fff;
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 16px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.login-btn:hover::before { opacity: 1; }
+.login-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(108,99,255,0.4); }
+.login-btn:active { transform: translateY(0); }
+
+.login-btn.loading {
+  background: linear-gradient(135deg, #4a43cc, #6c63ff);
+  cursor: not-allowed;
+}
+
+.login-hint {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.login-hint a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.login-hint a:hover { text-decoration: underline; }
+
+.login-error {
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: rgba(248,113,113,0.1);
+  border: 1px solid rgba(248,113,113,0.2);
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--danger);
+  display: none;
+}
+
+.login-error.show { display: block; }
+
+/* Features row */
+.login-features {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 28px;
+}
+
+.login-feature {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.login-feature-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0.6;
+}
+
+/* ════════════════════════════════════════
+   TRANSITION OVERLAY
+   ════════════════════════════════════════ */
+#transitionOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 20px;
+  background: var(--bg);
+}
+
+#transitionOverlay.active { display: flex; }
+
+.transition-logo {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 42px;
+  background: linear-gradient(135deg, #43e8a0, #6c63ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.transition-logo.show { opacity: 1; transform: scale(1); }
+
+.transition-bar-wrap {
+  width: 200px;
+  height: 3px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 100px;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.3s 0.3s;
+}
+
+.transition-bar-wrap.show { opacity: 1; }
+
+.transition-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #6c63ff, #43e8a0);
+  border-radius: 100px;
+  transition: width 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.transition-bar.fill { width: 100%; }
+
+.transition-msg {
+  font-size: 13px;
+  color: var(--muted);
+  opacity: 0;
+  transition: opacity 0.3s 0.5s;
+  letter-spacing: 0.5px;
+}
+
+.transition-msg.show { opacity: 1; }
+
+/* ════════════════════════════════════════
+   MAIN APP (hidden until login)
+   ════════════════════════════════════════ */
+#appShell {
+  display: flex;
+  min-height: 100vh;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+#appShell.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* ── Sidebar ── */
@@ -50,14 +374,10 @@ body {
   z-index: 50;
 }
 
-.logo {
-  padding: 0 24px 28px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 16px;
-}
+.logo { padding: 0 24px 28px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
 
 .logo-text {
-  font-family: 'Syne', 'Segoe UI', system-ui, sans-serif;
+  font-family: 'Syne', sans-serif;
   font-weight: 800;
   font-size: 22px;
   background: linear-gradient(135deg, #6c63ff, #ff6584);
@@ -67,13 +387,7 @@ body {
   letter-spacing: -0.5px;
 }
 
-.logo-sub {
-  font-size: 11px;
-  color: var(--muted);
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  margin-top: 2px;
-}
+.logo-sub { font-size: 11px; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; margin-top: 2px; }
 
 .nav-item {
   display: flex;
@@ -90,118 +404,90 @@ body {
 }
 
 .nav-item:hover { color: var(--text); background: rgba(108,99,255,0.06); }
-
-.nav-item.active {
-  color: var(--accent);
-  background: rgba(108,99,255,0.1);
-  border-left-color: var(--accent);
-}
-
+.nav-item.active { color: var(--accent); background: rgba(108,99,255,0.1); border-left-color: var(--accent); }
 .nav-icon { font-size: 18px; width: 22px; text-align: center; }
+.nav-label { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 600; }
 
-.nav-label { font-family: 'Syne', 'Segoe UI', system-ui, sans-serif; font-size: 13px; font-weight: 600; }
+.sidebar-footer { margin-top: auto; padding: 16px 24px; border-top: 1px solid var(--border); }
 
-.sidebar-footer {
-  margin-top: auto;
-  padding: 16px 24px;
-  border-top: 1px solid var(--border);
-}
-
-.api-status {
-  font-size: 11px;
-  color: var(--muted);
+.user-pill {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 10px;
+  padding: 10px 12px;
+  background: rgba(67,232,160,0.06);
+  border: 1px solid rgba(67,232,160,0.15);
+  border-radius: 10px;
 }
 
-.status-dot {
-  width: 7px; height: 7px;
+.user-dot {
+  width: 8px; height: 8px;
   border-radius: 50%;
-  background: var(--muted);
+  background: var(--success);
+  box-shadow: 0 0 8px var(--success);
+  flex-shrink: 0;
+  animation: pulse-dot 2s infinite;
 }
 
-.status-dot.connected { background: var(--success); box-shadow: 0 0 6px var(--success); }
+@keyframes pulse-dot {
+  0%, 100% { box-shadow: 0 0 4px var(--success); }
+  50% { box-shadow: 0 0 14px var(--success), 0 0 28px rgba(67,232,160,0.3); }
+}
+
+.user-info { flex: 1; min-width: 0; }
+.user-status { font-size: 11px; font-weight: 700; color: var(--success); font-family: 'Syne', sans-serif; }
+.user-label { font-size: 10px; color: var(--muted); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.logout-icon { font-size: 14px; cursor: pointer; opacity: 0.4; transition: opacity 0.2s; color: var(--danger); }
+.logout-icon:hover { opacity: 1; }
 
 /* ── Main ── */
-.main {
-  margin-left: 240px;
-  flex: 1;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
+.main { margin-left: 240px; flex: 1; min-height: 100vh; display: flex; flex-direction: column; }
 
 .topbar {
-  padding: 20px 32px;
+  padding: 18px 32px;
   border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   background: var(--surface);
   position: sticky;
   top: 0;
   z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.topbar-title {
-  font-family: 'Syne', 'Segoe UI', system-ui, sans-serif;
-  font-weight: 700;
-  font-size: 20px;
-}
+.topbar-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 20px; }
+.topbar-sub { font-size: 13px; color: var(--muted); margin-top: 2px; }
 
-.topbar-sub {
-  font-size: 13px;
-  color: var(--muted);
-  margin-top: 2px;
-}
-
-.api-key-zone {
+.topbar-right {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.api-input {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 8px 14px;
-  border-radius: 8px;
-  font-family: 'DM Sans', 'Segoe UI', system-ui, sans-serif;
-  font-size: 13px;
-  width: 220px;
-  transition: border-color 0.2s;
-  outline: none;
+.topbar-badge {
+  background: rgba(67,232,160,0.1);
+  border: 1px solid rgba(67,232,160,0.25);
+  color: var(--success);
+  padding: 6px 14px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 7px;
 }
 
-.api-input:focus { border-color: var(--accent); }
-
-.api-input::placeholder { color: var(--muted); }
-
-.btn-save {
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-family: 'Syne', 'Segoe UI', system-ui, sans-serif;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  white-space: nowrap;
+.topbar-badge-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--success);
+  animation: pulse-dot 2s infinite;
 }
-
-.btn-save:hover { background: #5a52e0; transform: translateY(-1px); }
 
 /* ── Content ── */
-.content {
-  flex: 1;
-  padding: 32px;
-  max-width: 900px;
-}
-
+.content { flex: 1; padding: 32px; max-width: 900px; }
 .tab-panel { display: none; }
 .tab-panel.active { display: block; }
 
@@ -212,27 +498,39 @@ body {
   border-radius: 16px;
   padding: 28px;
   margin-bottom: 20px;
-  box-shadow: var(--card-glow);
+  box-shadow: 0 0 0 1px #252936, 0 4px 24px rgba(108,99,255,0.08);
 }
 
 .card-title {
-  font-family: 'Syne', 'Segoe UI', system-ui, sans-serif;
+  font-family: 'Syne', sans-serif;
   font-weight: 700;
   font-size: 16px;
   margin-bottom: 6px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
 }
 
-.card-desc {
-  font-size: 13px;
-  color: var(--muted2);
-  margin-bottom: 20px;
-  line-height: 1.6;
+.card-desc { font-size: 13px; color: var(--muted2); margin-bottom: 20px; line-height: 1.6; }
+
+/* Stats */
+.stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
 }
 
-/* ── Form Elements ── */
+.stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+.stat-card.purple::before { background: linear-gradient(90deg, var(--accent), transparent); }
+.stat-card.green::before { background: linear-gradient(90deg, var(--success), transparent); }
+.stat-card.pink::before { background: linear-gradient(90deg, var(--accent2), transparent); }
+
+.stat-number { font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800; margin-bottom: 4px; }
+.stat-label { font-size: 12px; color: var(--muted2); }
+
+/* ── Forms ── */
 .form-group { margin-bottom: 16px; }
 
 .form-label {
@@ -243,7 +541,7 @@ body {
   letter-spacing: 0.8px;
   text-transform: uppercase;
   margin-bottom: 8px;
-  font-family: 'Syne', 'Segoe UI', system-ui, sans-serif;
+  font-family: 'Syne', sans-serif;
 }
 
 .form-input, .form-textarea, .form-select {
@@ -253,7 +551,7 @@ body {
   color: var(--text);
   padding: 12px 16px;
   border-radius: 10px;
-  font-family: 'DM Sans', 'Segoe UI', system-ui, sans-serif;
+  font-family: 'DM Sans', sans-serif;
   font-size: 14px;
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
@@ -266,14 +564,8 @@ body {
 }
 
 .form-input::placeholder, .form-textarea::placeholder { color: var(--muted); }
-
 .form-select option { background: var(--surface); }
-
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 
 /* ── Buttons ── */
 .btn-primary {
@@ -282,7 +574,7 @@ body {
   border: none;
   padding: 13px 28px;
   border-radius: 10px;
-  font-family: 'Syne', 'Segoe UI', system-ui, sans-serif;
+  font-family: 'Syne', sans-serif;
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
@@ -290,45 +582,17 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  letter-spacing: 0.3px;
 }
 
 .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(108,99,255,0.3); }
 .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
-.btn-secondary {
-  background: var(--surface2);
-  color: var(--text);
-  border: 1px solid var(--border);
-  padding: 10px 20px;
-  border-radius: 10px;
-  font-family: 'Syne', 'Segoe UI', system-ui, sans-serif;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.btn-secondary:hover { background: var(--border); }
-
-/* ── Tags / Chips ── */
-.tag {
-  display: inline-block;
-  padding: 4px 12px;
-  border-radius: 100px;
-  font-size: 11px;
-  font-weight: 600;
-  font-family: 'Syne', 'Segoe UI', system-ui, sans-serif;
-  letter-spacing: 0.5px;
-}
-
+/* ── Tags ── */
+.tag { display: inline-block; padding: 4px 12px; border-radius: 100px; font-size: 11px; font-weight: 600; font-family: 'Syne', sans-serif; }
 .tag-purple { background: rgba(108,99,255,0.15); color: #a78bfa; }
 .tag-green { background: rgba(67,232,160,0.12); color: var(--success); }
-.tag-red { background: rgba(248,113,113,0.12); color: var(--danger); }
-.tag-yellow { background: rgba(251,191,36,0.12); color: var(--warning); }
-.tag-pink { background: rgba(255,101,132,0.12); color: var(--accent2); }
 
-/* ── Result output ── */
+/* ── Result box ── */
 .result-box {
   background: var(--bg);
   border: 1px solid var(--border);
@@ -336,26 +600,17 @@ body {
   padding: 20px;
   margin-top: 20px;
   display: none;
-  position: relative;
 }
 
 .result-box.visible { display: block; }
 
-.result-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 14px;
-}
+.result-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
 
 .result-title {
-  font-family: 'Syne', 'Segoe UI', system-ui, sans-serif;
+  font-family: 'Syne', sans-serif;
   font-size: 13px;
   font-weight: 700;
   color: var(--accent);
-  display: flex;
-  align-items: center;
-  gap: 6px;
 }
 
 .copy-btn {
@@ -367,26 +622,16 @@ body {
   font-size: 12px;
   cursor: pointer;
   transition: all 0.2s;
-  font-family: 'DM Sans', 'Segoe UI', system-ui, sans-serif;
+  font-family: 'DM Sans', sans-serif;
 }
 
 .copy-btn:hover { color: var(--text); border-color: var(--accent); }
 .copy-btn.copied { color: var(--success); border-color: var(--success); }
 
-.result-content {
-  font-size: 14px;
-  line-height: 1.8;
-  color: var(--text);
-  white-space: pre-wrap;
-}
+.result-content { font-size: 14px; line-height: 1.8; color: var(--text); white-space: pre-wrap; }
 
-/* Product cards */
-.product-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-top: 20px;
-}
+/* ── Product grid ── */
+.product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px; }
 
 .product-card {
   background: var(--surface2);
@@ -394,544 +639,570 @@ body {
   border-radius: 12px;
   padding: 18px;
   transition: border-color 0.2s, transform 0.2s;
-  cursor: default;
 }
 
 .product-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+.product-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; margin-bottom: 8px; }
+.product-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+.product-desc { font-size: 12px; color: var(--muted2); line-height: 1.5; margin-bottom: 12px; }
+.product-profit { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; color: var(--success); }
+.product-profit-label { font-size: 11px; color: var(--muted); }
 
-.product-name {
-  font-family: 'Syne', 'Segoe UI', system-ui, sans-serif;
-  font-weight: 700;
-  font-size: 14px;
-  margin-bottom: 8px;
-}
-
-.product-meta {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-bottom: 10px;
-}
-
-.product-desc {
-  font-size: 12px;
-  color: var(--muted2);
-  line-height: 1.5;
-  margin-bottom: 12px;
-}
-
-.product-profit {
-  font-family: 'Syne', 'Segoe UI', system-ui, sans-serif;
-  font-size: 18px;
-  font-weight: 800;
-  color: var(--success);
-}
-
-.product-profit-label {
-  font-size: 11px;
-  color: var(--muted);
-}
-
-/* Loading spinner */
-.spinner {
-  display: inline-block;
-  width: 18px; height: 18px;
-  border: 2px solid rgba(255,255,255,0.2);
-  border-top-color: #fff;
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-}
-
+/* ── Spinner ── */
+.spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.2); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ── Stats bar on Home ── */
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  margin-bottom: 24px;
+/* ── Error ── */
+.error-box { background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.2); border-radius: 10px; padding: 14px 18px; font-size: 13px; color: var(--danger); margin-top: 16px; display: none; }
+.error-box.visible { display: block; }
+
+/* ── Tip box ── */
+.tip-box { background: rgba(108,99,255,0.07); border: 1px solid rgba(108,99,255,0.2); border-radius: 10px; padding: 14px 18px; font-size: 13px; color: var(--muted2); line-height: 1.6; margin-bottom: 20px; display: flex; gap: 12px; align-items: flex-start; }
+.tip-icon { font-size: 18px; flex-shrink: 0; }
+
+/* ── Checklist ── */
+.checklist { list-style: none; }
+.checklist li { padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; display: flex; align-items: flex-start; gap: 12px; line-height: 1.5; }
+.checklist li:last-child { border-bottom: none; }
+.check-num { background: rgba(108,99,255,0.15); color: var(--accent); font-family: 'Syne', sans-serif; font-weight: 700; font-size: 11px; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+
+/* ── Home welcome ── */
+.welcome-hero {
+  background: linear-gradient(135deg, rgba(108,99,255,0.08), rgba(67,232,160,0.04));
+  border: 1px solid rgba(108,99,255,0.15);
+  border-radius: 20px;
+  padding: 32px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
 }
 
-.stat-card {
+.welcome-text h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, var(--text), #a5b4fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.welcome-text p { font-size: 14px; color: var(--muted2); line-height: 1.6; max-width: 420px; }
+
+.welcome-emoji { font-size: 64px; flex-shrink: 0; }
+
+.tool-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+
+.tool-card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 14px;
   padding: 20px;
+  cursor: pointer;
+  transition: all 0.25s;
   position: relative;
   overflow: hidden;
 }
 
-.stat-card::before {
+.tool-card::before {
   content: '';
   position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 3px;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.25s;
 }
 
-.stat-card.purple::before { background: linear-gradient(90deg, var(--accent), transparent); }
-.stat-card.green::before { background: linear-gradient(90deg, var(--success), transparent); }
-.stat-card.pink::before { background: linear-gradient(90deg, var(--accent2), transparent); }
+.tool-card.tc-purple::before { background: linear-gradient(135deg, rgba(108,99,255,0.08), transparent); }
+.tool-card.tc-green::before { background: linear-gradient(135deg, rgba(67,232,160,0.08), transparent); }
+.tool-card.tc-pink::before { background: linear-gradient(135deg, rgba(255,101,132,0.08), transparent); }
 
-.stat-number {
-  font-family: 'Syne', 'Segoe UI', system-ui, sans-serif;
-  font-size: 32px;
-  font-weight: 800;
-  margin-bottom: 4px;
-}
+.tool-card:hover::before { opacity: 1; }
+.tool-card:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,0.2); }
+.tool-card:hover.tc-purple { border-color: rgba(108,99,255,0.4); }
+.tool-card:hover.tc-green { border-color: rgba(67,232,160,0.4); }
+.tool-card:hover.tc-pink { border-color: rgba(255,101,132,0.4); }
 
-.stat-label { font-size: 12px; color: var(--muted2); }
+.tool-icon { font-size: 32px; margin-bottom: 12px; }
+.tool-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; margin-bottom: 4px; position: relative; }
+.tool-desc { font-size: 12px; color: var(--muted2); line-height: 1.5; position: relative; }
+.tool-arrow { position: absolute; top: 20px; right: 20px; color: var(--muted); font-size: 18px; transition: transform 0.2s; }
+.tool-card:hover .tool-arrow { transform: translate(3px, -3px); }
 
-/* Alert / tip box */
-.tip-box {
-  background: rgba(108,99,255,0.07);
-  border: 1px solid rgba(108,99,255,0.2);
-  border-radius: 10px;
-  padding: 14px 18px;
-  font-size: 13px;
-  color: var(--muted2);
-  line-height: 1.6;
-  margin-bottom: 20px;
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-}
-
-.tip-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
-
-/* Divider */
-.divider {
-  border: none;
-  border-top: 1px solid var(--border);
-  margin: 24px 0;
-}
-
-/* Checklist */
-.checklist { list-style: none; }
-.checklist li {
-  padding: 10px 0;
-  border-bottom: 1px solid var(--border);
-  font-size: 14px;
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  line-height: 1.5;
-}
-
-.checklist li:last-child { border-bottom: none; }
-.check-num {
-  background: rgba(108,99,255,0.15);
-  color: var(--accent);
-  font-family: 'Syne', 'Segoe UI', system-ui, sans-serif;
-  font-weight: 700;
-  font-size: 11px;
-  width: 22px; height: 22px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  margin-top: 1px;
-}
-
-/* Responsive */
 @media (max-width: 768px) {
   .sidebar { width: 60px; }
-  .nav-label, .logo-sub, .logo-text span, .sidebar-footer { display: none; }
-  .logo-text { font-size: 16px; }
+  .nav-label, .logo-sub, .sidebar-footer { display: none; }
   .main { margin-left: 60px; }
-  .product-grid { grid-template-columns: 1fr; }
-  .form-row { grid-template-columns: 1fr; }
-  .stats-grid { grid-template-columns: 1fr; }
-  .api-key-zone { display: none; }
+  .product-grid, .tool-grid, .form-row { grid-template-columns: 1fr; }
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .welcome-hero { flex-direction: column; text-align: center; }
+  .welcome-emoji { display: none; }
   .content { padding: 20px; }
+  .topbar { padding: 16px 20px; }
 }
-
-.error-box {
-  background: rgba(248,113,113,0.08);
-  border: 1px solid rgba(248,113,113,0.2);
-  border-radius: 10px;
-  padding: 14px 18px;
-  font-size: 13px;
-  color: var(--danger);
-  margin-top: 16px;
-  display: none;
-}
-
-.error-box.visible { display: block; }
-
-.streaming-cursor::after {
-  content: '▌';
-  animation: blink 1s step-end infinite;
-  color: var(--accent);
-}
-
-@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 </style>
 </head>
 <body>
 
-<!-- ── Sidebar ── -->
-<nav class="sidebar">
-  <div class="logo">
-    <div class="logo-text">DropAI</div>
-    <div class="logo-sub">Shopify Assistant</div>
+<!-- ════════════ LOGIN SCREEN ════════════ -->
+<div id="loginScreen">
+  <div class="login-bg">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <div class="login-grid"></div>
   </div>
 
-  <div class="nav-item active" data-tab="home">
-    <span class="nav-icon">🏠</span>
-    <span class="nav-label">Home</span>
-  </div>
-  <div class="nav-item" data-tab="research">
-    <span class="nav-icon">🔍</span>
-    <span class="nav-label">Product Research</span>
-  </div>
-  <div class="nav-item" data-tab="listings">
-    <span class="nav-icon">📝</span>
-    <span class="nav-label">Listing Writer</span>
-  </div>
-  <div class="nav-item" data-tab="support">
-    <span class="nav-icon">💬</span>
-    <span class="nav-label">Customer Support</span>
-  </div>
-  <div class="nav-item" data-tab="guide">
-    <span class="nav-icon">🗺️</span>
-    <span class="nav-label">Start Guide</span>
-  </div>
-
-  <div class="sidebar-footer">
-    <div class="api-status">
-      <div class="status-dot" id="statusDot"></div>
-      <span id="statusText">No API key</span>
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-text">DropAI</div>
+      <div class="login-logo-sub">Shopify Business Assistant</div>
     </div>
-  </div>
-</nav>
 
-<!-- ── Main ── -->
-<div class="main">
-  <div class="topbar">
-    <div>
-      <div class="topbar-title" id="topbarTitle">Dashboard</div>
-      <div class="topbar-sub" id="topbarSub">Your AI-powered Shopify business assistant</div>
-    </div>
-    <div class="api-key-zone">
-      <input type="password" class="api-input" id="apiKeyInput" placeholder="Paste your Claude API key..." />
-      <button class="btn-save" id="saveApiKey">Connect</button>
-    </div>
-  </div>
+    <p class="login-tagline">Your <strong>AI-powered co-pilot</strong> for finding products,<br>writing listings, and handling customers.</p>
 
-  <div class="content">
-
-    <!-- ── HOME ── -->
-    <div class="tab-panel active" id="tab-home">
-      <div class="stats-grid">
-        <div class="stat-card purple">
-          <div class="stat-number">3</div>
-          <div class="stat-label">AI Tools Ready</div>
-        </div>
-        <div class="stat-card green">
-          <div class="stat-number">$0</div>
-          <div class="stat-label">Startup Cost</div>
-        </div>
-        <div class="stat-card pink">
-          <div class="stat-number">∞</div>
-          <div class="stat-label">Products to Find</div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">👋 Welcome to DropAI</div>
-        <div class="card-desc">Your personal AI business assistant for running a dropshipping store on Shopify. Connect your Claude API key above to unlock all features — it costs less than $0.01 per use.</div>
-
-        <div class="tip-box">
-          <span class="tip-icon">⚡</span>
-          <span><strong style="color:var(--text)">Quick start:</strong> Paste your Claude API key in the top right, click Connect, then head to <strong style="color:var(--text)">Product Research</strong> to find your first winning product idea.</span>
-        </div>
-
-        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">
-          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;" onclick="switchTab('research')">
-            <div style="font-size:28px;margin-bottom:8px;">🔍</div>
-            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:4px;">Product Research</div>
-            <div style="font-size:12px;color:var(--muted2);">Find trending dropship products with profit estimates</div>
-          </div>
-          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;" onclick="switchTab('listings')">
-            <div style="font-size:28px;margin-bottom:8px;">📝</div>
-            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:4px;">Listing Writer</div>
-            <div style="font-size:12px;color:var(--muted2);">Generate full Shopify product pages instantly</div>
-          </div>
-          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;" onclick="switchTab('support')">
-            <div style="font-size:28px;margin-bottom:8px;">💬</div>
-            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:4px;">Customer Support</div>
-            <div style="font-size:12px;color:var(--muted2);">AI-drafted replies to any customer message</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">💡 How to get a free Claude API Key</div>
-        <ul class="checklist">
-          <li><span class="check-num">1</span><span>Go to <strong style="color:var(--accent)">console.anthropic.com</strong> and create a free account</span></li>
-          <li><span class="check-num">2</span><span>Click <strong>"Get API Keys"</strong> in the left sidebar</span></li>
-          <li><span class="check-num">3</span><span>Click <strong>"Create Key"</strong>, give it a name like "DropAI"</span></li>
-          <li><span class="check-num">4</span><span>Copy the key (starts with <code style="background:var(--bg);padding:2px 6px;border-radius:4px;font-size:12px;">sk-ant-...</code>)</span></li>
-          <li><span class="check-num">5</span><span>Paste it in the <strong>top right</strong> of this page and click Connect</span></li>
-          <li><span class="check-num">6</span><span>Anthropic gives new accounts free credits — enough for hundreds of uses</span></li>
-        </ul>
+    <div class="login-box">
+      <label class="login-label" for="loginKey">Claude API Key</label>
+      <input
+        type="password"
+        class="login-input"
+        id="loginKey"
+        placeholder="sk-ant-api03-..."
+        autocomplete="off"
+      />
+      <div class="login-error" id="loginError"></div>
+      <button class="login-btn" id="loginBtn" onclick="handleLogin()">
+        Launch Dashboard →
+      </button>
+      <div class="login-hint">
+        Get a free key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a><br>
+        Your key is stored only in your browser. Never shared.
       </div>
     </div>
 
-    <!-- ── PRODUCT RESEARCH ── -->
-    <div class="tab-panel" id="tab-research">
-      <div class="card">
-        <div class="card-title">🔍 Product Research Engine</div>
-        <div class="card-desc">Describe a niche, audience, or interest and the AI will generate 4 winning product ideas with AliExpress sourcing tips, estimated profit margins, and organic content angles for TikTok/Instagram.</div>
+    <div class="login-features">
+      <div class="login-feature"><div class="login-feature-dot"></div>Product Research</div>
+      <div class="login-feature"><div class="login-feature-dot" style="background:var(--accent2)"></div>Listing Writer</div>
+      <div class="login-feature"><div class="login-feature-dot" style="background:var(--success)"></div>Customer Support</div>
+    </div>
+  </div>
+</div>
 
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Niche or Audience</label>
-            <input type="text" class="form-input" id="researchNiche" placeholder="e.g. pet owners, gym beginners, new moms..." />
-          </div>
-          <div class="form-group">
-            <label class="form-label">Trending Platform</label>
-            <select class="form-select" id="researchPlatform">
-              <option value="TikTok">TikTok (viral potential)</option>
-              <option value="Instagram Reels">Instagram Reels</option>
-              <option value="Pinterest">Pinterest</option>
-              <option value="YouTube Shorts">YouTube Shorts</option>
-            </select>
-          </div>
-        </div>
+<!-- ════════════ TRANSITION OVERLAY ════════════ -->
+<div id="transitionOverlay">
+  <div class="transition-logo" id="transitionLogo">DropAI</div>
+  <div class="transition-bar-wrap" id="transitionBarWrap">
+    <div class="transition-bar" id="transitionBar"></div>
+  </div>
+  <div class="transition-msg" id="transitionMsg">Connecting to Claude AI...</div>
+</div>
 
-        <div class="form-group">
-          <label class="form-label">Extra context (optional)</label>
-          <input type="text" class="form-input" id="researchContext" placeholder="e.g. under $30, solves a problem, visually satisfying..." />
-        </div>
+<!-- ════════════ MAIN APP ════════════ -->
+<div id="appShell">
 
-        <button class="btn-primary" id="researchBtn" onclick="runResearch()">
-          <span>🔍 Find Winning Products</span>
-        </button>
-
-        <div class="error-box" id="researchError"></div>
-
-        <div id="productResults"></div>
-      </div>
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="logo">
+      <div class="logo-text">DropAI</div>
+      <div class="logo-sub">Shopify Assistant</div>
     </div>
 
-    <!-- ── LISTING WRITER ── -->
-    <div class="tab-panel" id="tab-listings">
-      <div class="card">
-        <div class="card-title">📝 Shopify Listing Generator</div>
-        <div class="card-desc">Enter a product name and details — the AI writes a complete, conversion-optimized Shopify listing: title, description, bullet points, and SEO meta tags. Ready to copy-paste.</div>
+    <div class="nav-item active" data-tab="home">
+      <span class="nav-icon">🏠</span>
+      <span class="nav-label">Home</span>
+    </div>
+    <div class="nav-item" data-tab="research">
+      <span class="nav-icon">🔍</span>
+      <span class="nav-label">Product Research</span>
+    </div>
+    <div class="nav-item" data-tab="listings">
+      <span class="nav-icon">📝</span>
+      <span class="nav-label">Listing Writer</span>
+    </div>
+    <div class="nav-item" data-tab="support">
+      <span class="nav-icon">💬</span>
+      <span class="nav-label">Customer Support</span>
+    </div>
+    <div class="nav-item" data-tab="guide">
+      <span class="nav-icon">🗺️</span>
+      <span class="nav-label">Start Guide</span>
+    </div>
 
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Product Name</label>
-            <input type="text" class="form-input" id="listingProduct" placeholder="e.g. Posture Corrector Brace..." />
-          </div>
-          <div class="form-group">
-            <label class="form-label">Target Audience</label>
-            <input type="text" class="form-input" id="listingAudience" placeholder="e.g. office workers with back pain..." />
-          </div>
+    <div class="sidebar-footer">
+      <div class="user-pill">
+        <div class="user-dot"></div>
+        <div class="user-info">
+          <div class="user-status">AI Connected</div>
+          <div class="user-label" id="keyPreview">sk-ant-...</div>
         </div>
+        <div class="logout-icon" onclick="logout()" title="Disconnect">⏻</div>
+      </div>
+    </div>
+  </nav>
 
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Key Features (comma separated)</label>
-            <input type="text" class="form-input" id="listingFeatures" placeholder="e.g. adjustable, lightweight, breathable..." />
-          </div>
-          <div class="form-group">
-            <label class="form-label">Your Selling Price</label>
-            <input type="text" class="form-input" id="listingPrice" placeholder="e.g. $29.99" />
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Brand / Store Name</label>
-          <input type="text" class="form-input" id="listingBrand" placeholder="e.g. PurePosture, or leave blank" />
-        </div>
-
-        <button class="btn-primary" id="listingBtn" onclick="runListing()">
-          <span>✍️ Generate Full Listing</span>
-        </button>
-
-        <div class="error-box" id="listingError"></div>
-
-        <div class="result-box" id="listingResult">
-          <div class="result-header">
-            <div class="result-title">✅ Shopify Listing Ready</div>
-            <button class="copy-btn" onclick="copyResult('listingContent', this)">Copy All</button>
-          </div>
-          <div class="result-content" id="listingContent"></div>
+  <!-- Main -->
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title" id="topbarTitle">Dashboard</div>
+        <div class="topbar-sub" id="topbarSub">Welcome back — ready to build?</div>
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-badge">
+          <div class="topbar-badge-dot"></div>
+          Claude AI Active
         </div>
       </div>
     </div>
 
-    <!-- ── CUSTOMER SUPPORT ── -->
-    <div class="tab-panel" id="tab-support">
-      <div class="card">
-        <div class="card-title">💬 Customer Support AI</div>
-        <div class="card-desc">Paste any customer message — angry, confused, asking for a refund, asking about shipping. Get a professional, empathetic reply drafted in seconds that you can send directly.</div>
+    <div class="content">
 
-        <div class="form-row">
+      <!-- HOME -->
+      <div class="tab-panel active" id="tab-home">
+        <div class="welcome-hero">
+          <div class="welcome-text">
+            <h2>Ready to build your store? 🚀</h2>
+            <p>Your AI business assistant is live. Use the tools below to research winning products, generate Shopify listings, and handle customer messages — all in seconds.</p>
+          </div>
+          <div class="welcome-emoji">💰</div>
+        </div>
+
+        <div class="tool-grid">
+          <div class="tool-card tc-purple" onclick="switchTab('research')">
+            <div class="tool-arrow">↗</div>
+            <div class="tool-icon">🔍</div>
+            <div class="tool-name">Product Research</div>
+            <div class="tool-desc">Find trending dropship products with profit estimates and supplier tips</div>
+          </div>
+          <div class="tool-card tc-green" onclick="switchTab('listings')">
+            <div class="tool-arrow">↗</div>
+            <div class="tool-icon">📝</div>
+            <div class="tool-name">Listing Writer</div>
+            <div class="tool-desc">Generate complete Shopify product pages — title, description, SEO tags</div>
+          </div>
+          <div class="tool-card tc-pink" onclick="switchTab('support')">
+            <div class="tool-arrow">↗</div>
+            <div class="tool-icon">💬</div>
+            <div class="tool-name">Customer Support</div>
+            <div class="tool-desc">Draft professional replies to any customer message instantly</div>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card purple">
+            <div class="stat-number">3</div>
+            <div class="stat-label">AI Tools Active</div>
+          </div>
+          <div class="stat-card green">
+            <div class="stat-number">$0</div>
+            <div class="stat-label">Startup Cost</div>
+          </div>
+          <div class="stat-card pink">
+            <div class="stat-number">∞</div>
+            <div class="stat-label">Products to Find</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PRODUCT RESEARCH -->
+      <div class="tab-panel" id="tab-research">
+        <div class="card">
+          <div class="card-title">🔍 Product Research Engine</div>
+          <div class="card-desc">Describe a niche, audience, or interest and the AI will generate 4 winning product ideas with AliExpress sourcing tips, estimated profit margins, and organic content angles for TikTok/Instagram.</div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Niche or Audience</label>
+              <input type="text" class="form-input" id="researchNiche" placeholder="e.g. pet owners, gym beginners, new moms..." />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Trending Platform</label>
+              <select class="form-select" id="researchPlatform">
+                <option value="TikTok">TikTok (viral potential)</option>
+                <option value="Instagram Reels">Instagram Reels</option>
+                <option value="Pinterest">Pinterest</option>
+                <option value="YouTube Shorts">YouTube Shorts</option>
+              </select>
+            </div>
+          </div>
+
           <div class="form-group">
-            <label class="form-label">Your Store Name</label>
-            <input type="text" class="form-input" id="supportStore" placeholder="e.g. TrendVault" />
+            <label class="form-label">Extra context (optional)</label>
+            <input type="text" class="form-input" id="researchContext" placeholder="e.g. under $30, solves a problem, visually satisfying..." />
           </div>
+
+          <button class="btn-primary" id="researchBtn" onclick="runResearch()">🔍 Find Winning Products</button>
+          <div class="error-box" id="researchError"></div>
+          <div id="productResults"></div>
+        </div>
+      </div>
+
+      <!-- LISTING WRITER -->
+      <div class="tab-panel" id="tab-listings">
+        <div class="card">
+          <div class="card-title">📝 Shopify Listing Generator</div>
+          <div class="card-desc">Enter a product name and details — the AI writes a complete, conversion-optimized Shopify listing ready to copy-paste.</div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Product Name</label>
+              <input type="text" class="form-input" id="listingProduct" placeholder="e.g. Posture Corrector Brace..." />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Target Audience</label>
+              <input type="text" class="form-input" id="listingAudience" placeholder="e.g. office workers with back pain..." />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Key Features (comma separated)</label>
+              <input type="text" class="form-input" id="listingFeatures" placeholder="e.g. adjustable, lightweight, breathable..." />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Your Selling Price</label>
+              <input type="text" class="form-input" id="listingPrice" placeholder="e.g. $29.99" />
+            </div>
+          </div>
+
           <div class="form-group">
-            <label class="form-label">Message Type</label>
-            <select class="form-select" id="supportType">
-              <option value="general inquiry">General Inquiry</option>
-              <option value="angry complaint">Angry Complaint</option>
-              <option value="refund request">Refund Request</option>
-              <option value="shipping delay question">Shipping Delay</option>
-              <option value="wrong item received">Wrong Item</option>
-              <option value="product not working">Product Issue</option>
-            </select>
+            <label class="form-label">Brand / Store Name</label>
+            <input type="text" class="form-input" id="listingBrand" placeholder="e.g. PurePosture, or leave blank" />
           </div>
-        </div>
 
-        <div class="form-group">
-          <label class="form-label">Customer Message</label>
-          <textarea class="form-textarea" id="supportMessage" rows="5" placeholder="Paste the customer's message here..."></textarea>
-        </div>
+          <button class="btn-primary" id="listingBtn" onclick="runListing()">✍️ Generate Full Listing</button>
+          <div class="error-box" id="listingError"></div>
 
-        <div class="form-group">
-          <label class="form-label">Additional context (optional)</label>
-          <input type="text" class="form-input" id="supportContext" placeholder="e.g. their order arrived 2 days late, we can offer 10% refund..." />
-        </div>
-
-        <button class="btn-primary" id="supportBtn" onclick="runSupport()">
-          <span>💬 Generate Reply</span>
-        </button>
-
-        <div class="error-box" id="supportError"></div>
-
-        <div class="result-box" id="supportResult">
-          <div class="result-header">
-            <div class="result-title">✅ Customer Reply Ready</div>
-            <button class="copy-btn" onclick="copyResult('supportContent', this)">Copy</button>
-          </div>
-          <div class="result-content" id="supportContent"></div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">📋 Reply Tone Guide</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px;">
-          <div style="background:var(--bg);padding:14px;border-radius:10px;border:1px solid var(--border)">
-            <div style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:6px;color:var(--success)">✅ Always do</div>
-            <div style="color:var(--muted2);line-height:1.8">Acknowledge their frustration<br>Apologize sincerely<br>Offer a clear solution<br>Set realistic expectations<br>End on a positive note</div>
-          </div>
-          <div style="background:var(--bg);padding:14px;border-radius:10px;border:1px solid var(--border)">
-            <div style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:6px;color:var(--danger)">❌ Never do</div>
-            <div style="color:var(--muted2);line-height:1.8">Argue or get defensive<br>Make promises you can't keep<br>Use template-sounding language<br>Ignore the core complaint<br>Reply in under 2 hours (looks desperate)</div>
+          <div class="result-box" id="listingResult">
+            <div class="result-header">
+              <div class="result-title">✅ Shopify Listing Ready</div>
+              <button class="copy-btn" onclick="copyResult('listingContent', this)">Copy All</button>
+            </div>
+            <div class="result-content" id="listingContent"></div>
           </div>
         </div>
       </div>
+
+      <!-- CUSTOMER SUPPORT -->
+      <div class="tab-panel" id="tab-support">
+        <div class="card">
+          <div class="card-title">💬 Customer Support AI</div>
+          <div class="card-desc">Paste any customer message and get a professional, empathetic reply drafted in seconds.</div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Your Store Name</label>
+              <input type="text" class="form-input" id="supportStore" placeholder="e.g. TrendVault" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Message Type</label>
+              <select class="form-select" id="supportType">
+                <option value="general inquiry">General Inquiry</option>
+                <option value="angry complaint">Angry Complaint</option>
+                <option value="refund request">Refund Request</option>
+                <option value="shipping delay question">Shipping Delay</option>
+                <option value="wrong item received">Wrong Item</option>
+                <option value="product not working">Product Issue</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Customer Message</label>
+            <textarea class="form-textarea" id="supportMessage" rows="5" placeholder="Paste the customer's message here..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Additional context (optional)</label>
+            <input type="text" class="form-input" id="supportContext" placeholder="e.g. their order arrived 2 days late, we can offer 10% refund..." />
+          </div>
+
+          <button class="btn-primary" id="supportBtn" onclick="runSupport()">💬 Generate Reply</button>
+          <div class="error-box" id="supportError"></div>
+
+          <div class="result-box" id="supportResult">
+            <div class="result-header">
+              <div class="result-title">✅ Customer Reply Ready</div>
+              <button class="copy-btn" onclick="copyResult('supportContent', this)">Copy</button>
+            </div>
+            <div class="result-content" id="supportContent"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- START GUIDE -->
+      <div class="tab-panel" id="tab-guide">
+        <div class="card">
+          <div class="card-title">🗺️ Your $0 Dropshipping Roadmap</div>
+          <div class="card-desc">A step-by-step guide to launching your first Shopify store with organic traffic only.</div>
+          <ul class="checklist">
+            <li><span class="check-num">1</span><div><strong>Use Product Research</strong> to find 3–5 product ideas. Look for products that are visual, solve a real problem, and have a "wow" factor.</div></li>
+            <li><span class="check-num">2</span><div><strong>Source from AliExpress or CJDropshipping.</strong> Filter by orders (10,000+) and rating (4.5+). Aim to sell at 3–5x the supplier cost.</div></li>
+            <li><span class="check-num">3</span><div><strong>Create your Shopify store.</strong> Use Shopify's free trial. Pick the Dawn theme (free). Name your store something simple and brandable.</div></li>
+            <li><span class="check-num">4</span><div><strong>Install DSers (free)</strong> from the Shopify App Store. It connects AliExpress products and automates order fulfillment.</div></li>
+            <li><span class="check-num">5</span><div><strong>Use Listing Writer</strong> to generate product descriptions. Upload 5–8 product images from AliExpress.</div></li>
+            <li><span class="check-num">6</span><div><strong>Set up TikTok or Instagram.</strong> Post 1–3 short videos per day showing the product. Use trending sounds. No face needed.</div></li>
+            <li><span class="check-num">7</span><div><strong>Content formula:</strong> Hook (0–2s) → Problem → Product as solution → "Link in bio". Keep videos 15–30 seconds.</div></li>
+            <li><span class="check-num">8</span><div><strong>First sale comes in 1–3 weeks</strong> of consistent posting. Once a video hits 50K+ views, make more like it.</div></li>
+            <li><span class="check-num">9</span><div><strong>Use Customer Support</strong> to handle all messages. Respond within 24 hours.</div></li>
+            <li><span class="check-num">10</span><div><strong>Scale what works.</strong> When a product hits $500/month, put $100 into TikTok Spark Ads on your best video.</div></li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="card-title">💰 Realistic Income Timeline</div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;font-size:12px;">
+            <div style="background:var(--bg);padding:14px;border-radius:10px;border:1px solid var(--border);text-align:center;">
+              <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:var(--muted2);">Month 1</div>
+              <div style="color:var(--warning);font-weight:600;margin:6px 0;">$0–$200</div>
+              <div style="color:var(--muted);line-height:1.5">Setup & first sales</div>
+            </div>
+            <div style="background:var(--bg);padding:14px;border-radius:10px;border:1px solid var(--border);text-align:center;">
+              <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:var(--muted2);">Month 2</div>
+              <div style="color:var(--warning);font-weight:600;margin:6px 0;">$200–$800</div>
+              <div style="color:var(--muted);line-height:1.5">Building audience</div>
+            </div>
+            <div style="background:var(--bg);padding:14px;border-radius:10px;border:1px solid var(--border);text-align:center;">
+              <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:var(--muted2);">Month 3</div>
+              <div style="color:var(--success);font-weight:600;margin:6px 0;">$500–$2K</div>
+              <div style="color:var(--muted);line-height:1.5">Viral video potential</div>
+            </div>
+            <div style="background:var(--bg);padding:14px;border-radius:10px;border:1px solid var(--border);text-align:center;">
+              <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:var(--muted2);">Month 6+</div>
+              <div style="color:var(--success);font-weight:600;margin:6px 0;">$2K–$10K+</div>
+              <div style="color:var(--muted);line-height:1.5">Reinvesting in ads</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
-
-    <!-- ── START GUIDE ── -->
-    <div class="tab-panel" id="tab-guide">
-      <div class="card">
-        <div class="card-title">🗺️ Your $0 Dropshipping Roadmap</div>
-        <div class="card-desc">A step-by-step guide to launching your first Shopify dropshipping store with organic traffic only. Follow these in order.</div>
-
-        <ul class="checklist">
-          <li><span class="check-num">1</span><div><strong>Use Product Research (this app)</strong> to find 3–5 product ideas in a niche you're interested in. Look for products that are visual, solve a real problem, and have a "wow" factor.</div></li>
-          <li><span class="check-num">2</span><div><strong>Source from AliExpress or CJDropshipping.</strong> Search the product, filter by orders (10,000+) and rating (4.5+). Aim to sell at 3–5x the supplier cost.</div></li>
-          <li><span class="check-num">3</span><div><strong>Create your Shopify store.</strong> Use Shopify's free trial at shopify.com. Pick a clean theme (Dawn is free and great). Name your store something simple and brandable.</div></li>
-          <li><span class="check-num">4</span><div><strong>Install DSers (free app)</strong> from the Shopify App Store. It connects your AliExpress products to your store and automates order fulfillment.</div></li>
-          <li><span class="check-num">5</span><div><strong>Use Listing Writer (this app)</strong> to generate your product descriptions, copy them into Shopify. Upload 5–8 product images from AliExpress (you're allowed to use their photos).</div></li>
-          <li><span class="check-num">6</span><div><strong>Set up TikTok or Instagram.</strong> Create an account with your store name. Post 1–3 short videos per day showing the product. Use trending sounds. You don't need to show your face.</div></li>
-          <li><span class="check-num">7</span><div><strong>Content formula that converts:</strong> Hook (0–2s) → Problem → Product as solution → Call to action ("Link in bio"). Keep videos 15–30 seconds.</div></li>
-          <li><span class="check-num">8</span><div><strong>First sale typically comes in 1–3 weeks</strong> of consistent posting. Once you find a video that performs (50K+ views), run more content like that. Don't change products too fast.</div></li>
-          <li><span class="check-num">9</span><div><strong>Use Customer Support (this app)</strong> to handle all incoming messages. Respond within 24 hours. Happy customers = reviews = more sales.</div></li>
-          <li><span class="check-num">10</span><div><strong>Scale what works.</strong> When one product hits $500/month, reinvest $100 into TikTok Spark Ads to boost your best organic video. This is how $0 stores start paying for themselves.</div></li>
-        </ul>
-      </div>
-
-      <div class="card">
-        <div class="card-title">💰 Realistic Income Timeline</div>
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;font-size:12px;">
-          <div style="background:var(--bg);padding:14px;border-radius:10px;border:1px solid var(--border);text-align:center;">
-            <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:var(--muted2);">Month 1</div>
-            <div style="color:var(--warning);font-weight:600;margin:6px 0;">$0 – $200</div>
-            <div style="color:var(--muted);line-height:1.5">Store setup, finding your product, first few sales</div>
-          </div>
-          <div style="background:var(--bg);padding:14px;border-radius:10px;border:1px solid var(--border);text-align:center;">
-            <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:var(--muted2);">Month 2</div>
-            <div style="color:var(--warning);font-weight:600;margin:6px 0;">$200 – $800</div>
-            <div style="color:var(--muted);line-height:1.5">Consistent posting, building an audience</div>
-          </div>
-          <div style="background:var(--bg);padding:14px;border-radius:10px;border:1px solid var(--border);text-align:center;">
-            <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:var(--muted2);">Month 3</div>
-            <div style="color:var(--success);font-weight:600;margin:6px 0;">$500 – $2K</div>
-            <div style="color:var(--muted);line-height:1.5">One viral video can change everything</div>
-          </div>
-          <div style="background:var(--bg);padding:14px;border-radius:10px;border:1px solid var(--border);text-align:center;">
-            <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:var(--muted2);">Month 6+</div>
-            <div style="color:var(--success);font-weight:600;margin:6px 0;">$2K – $10K+</div>
-            <div style="color:var(--muted);line-height:1.5">Reinvesting in ads, multiple products</div>
-          </div>
-        </div>
-        <div class="tip-box" style="margin-top:16px;margin-bottom:0;">
-          <span class="tip-icon">⚠️</span>
-          <span style="color:var(--muted2)">These are realistic ranges, not guarantees. Success depends on product choice, content quality, and consistency. Most stores that fail do so because the owner gives up within 30 days. The ones that make money are the ones still posting in month 3.</span>
-        </div>
-      </div>
-    </div>
-
-  </div><!-- /content -->
-</div><!-- /main -->
+  </div>
+</div>
 
 <script>
-// ── API Key helpers (defined first) ───
-function setConnected(on) {
-  const dot = document.getElementById('statusDot');
-  const txt = document.getElementById('statusText');
-  if (on) {
-    dot.classList.add('connected');
-    txt.textContent = 'Connected ✓';
-  } else {
-    dot.classList.remove('connected');
-    txt.textContent = 'No API key';
+let apiKey = '';
+
+// ── Check if already logged in ──────────
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('dropai_key');
+  if (saved) {
+    apiKey = saved;
+    document.getElementById('loginKey').value = saved;
+    launchApp(true); // instant, no animation
   }
-}
+});
 
-// ── State ─────────────────────────────
-let apiKey = localStorage.getItem('dropai_key') || '';
-if (apiKey) {
-  document.getElementById('apiKeyInput').value = apiKey;
-  setConnected(true);
-}
+// ── Login handler ────────────────────────
+function handleLogin() {
+  const val = document.getElementById('loginKey').value.trim();
+  const err = document.getElementById('loginError');
+  const btn = document.getElementById('loginBtn');
 
-// ── API Key button ─────────────────────
-document.getElementById('saveApiKey').addEventListener('click', () => {
-  const val = document.getElementById('apiKeyInput').value.trim();
+  err.classList.remove('show');
+
   if (!val) {
-    alert('Please paste your API key first (starts with sk-ant-...)');
+    err.textContent = 'Please paste your API key first.';
+    err.classList.add('show');
     return;
   }
   if (!val.startsWith('sk-ant-')) {
-    alert('That doesn\'t look like a valid Claude API key. It should start with sk-ant-...');
+    err.textContent = 'That doesn\'t look right — Claude API keys start with sk-ant-...';
+    err.classList.add('show');
     return;
   }
+
   apiKey = val;
   localStorage.setItem('dropai_key', val);
-  setConnected(true);
-  const btn = document.getElementById('saveApiKey');
-  btn.textContent = 'Connected ✓';
-  btn.style.background = '#43e8a0';
-  btn.style.color = '#0c0e14';
-  setTimeout(() => {
-    btn.textContent = 'Connect';
-    btn.style.background = '';
-    btn.style.color = '';
-  }, 2000);
+
+  btn.textContent = 'Connecting...';
+  btn.classList.add('loading');
+
+  // Show transition
+  launchApp(false);
+}
+
+// Enter key on input
+document.addEventListener('DOMContentLoaded', () => {
+  const input = document.getElementById('loginKey');
+  if (input) input.addEventListener('keydown', e => { if (e.key === 'Enter') handleLogin(); });
 });
+
+function launchApp(instant) {
+  if (instant) {
+    document.getElementById('loginScreen').style.display = 'none';
+    const app = document.getElementById('appShell');
+    app.style.display = 'flex';
+    setTimeout(() => app.classList.add('visible'), 30);
+    updateKeyPreview();
+    return;
+  }
+
+  // Animated transition
+  const overlay = document.getElementById('transitionOverlay');
+  const logo = document.getElementById('transitionLogo');
+  const barWrap = document.getElementById('transitionBarWrap');
+  const bar = document.getElementById('transitionBar');
+  const msg = document.getElementById('transitionMsg');
+  const loginScreen = document.getElementById('loginScreen');
+  const app = document.getElementById('appShell');
+
+  // Step 1: fade out login
+  loginScreen.classList.add('exit');
+
+  setTimeout(() => {
+    loginScreen.style.display = 'none';
+    overlay.classList.add('active');
+
+    // Step 2: animate logo in
+    setTimeout(() => {
+      logo.classList.add('show');
+      barWrap.classList.add('show');
+      msg.classList.add('show');
+    }, 80);
+
+    // Step 3: fill progress bar
+    setTimeout(() => {
+      bar.classList.add('fill');
+    }, 200);
+
+    // Step 4: transition messages
+    const messages = ['Connecting to Claude AI...', 'Loading your tools...', 'Almost there...'];
+    let mi = 0;
+    const msgInterval = setInterval(() => {
+      mi++;
+      if (mi < messages.length) msg.textContent = messages[mi];
+    }, 350);
+
+    // Step 5: reveal app
+    setTimeout(() => {
+      clearInterval(msgInterval);
+      overlay.classList.remove('active');
+      app.style.display = 'flex';
+      updateKeyPreview();
+      setTimeout(() => app.classList.add('visible'), 30);
+    }, 1100);
+
+  }, 600);
+}
+
+function updateKeyPreview() {
+  const el = document.getElementById('keyPreview');
+  if (el && apiKey) el.textContent = apiKey.slice(0, 18) + '...';
+}
+
+function logout() {
+  if (!confirm('Disconnect your API key?')) return;
+  apiKey = '';
+  localStorage.removeItem('dropai_key');
+  location.reload();
+}
 
 // ── Navigation ────────────────────────
 const titles = {
-  home: ['Dashboard', 'Your AI-powered Shopify business assistant'],
+  home: ['Dashboard', 'Welcome back — ready to build?'],
   research: ['Product Research', 'Find trending dropship products with profit estimates'],
   listings: ['Listing Writer', 'Generate complete Shopify product listings instantly'],
   support: ['Customer Support', 'AI-drafted replies for any customer message'],
@@ -950,10 +1221,8 @@ function switchTab(tab) {
   document.getElementById('topbarSub').textContent = s;
 }
 
-// ── Claude API call ───────────────────
+// ── Claude API ────────────────────────
 async function callClaude(prompt, systemPrompt) {
-  if (!apiKey) throw new Error('Please connect your Claude API key first (top right).');
-
   const res = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -964,218 +1233,124 @@ async function callClaude(prompt, systemPrompt) {
       messages: [{ role: 'user', content: prompt }],
     })
   });
-
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error(err?.error?.message || `API error ${res.status}`);
   }
-
   const data = await res.json();
   return data.content.map(b => b.text || '').join('');
 }
 
-// ── Set btn loading ───────────────────
-function setLoading(btnId, loading, originalHTML) {
+function setLoading(btnId, loading, original) {
   const btn = document.getElementById(btnId);
-  if (loading) {
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner"></span> Thinking...';
-  } else {
-    btn.disabled = false;
-    btn.innerHTML = originalHTML;
-  }
+  if (loading) { btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Thinking...'; }
+  else { btn.disabled = false; btn.innerHTML = original; }
 }
 
-function showError(id, msg) {
-  const el = document.getElementById(id);
-  el.textContent = '⚠️ ' + msg;
-  el.classList.add('visible');
-}
+function showError(id, msg) { const el = document.getElementById(id); el.textContent = '⚠️ ' + msg; el.classList.add('visible'); }
+function clearError(id) { const el = document.getElementById(id); el.textContent = ''; el.classList.remove('visible'); }
 
-function clearError(id) {
-  const el = document.getElementById(id);
-  el.textContent = '';
-  el.classList.remove('visible');
-}
-
-// ── PRODUCT RESEARCH ─────────────────
+// ── Product Research ──────────────────
 async function runResearch() {
   clearError('researchError');
   const niche = document.getElementById('researchNiche').value.trim();
   const platform = document.getElementById('researchPlatform').value;
   const context = document.getElementById('researchContext').value.trim();
-
   if (!niche) { showError('researchError', 'Please enter a niche or audience.'); return; }
 
   setLoading('researchBtn', true, '🔍 Find Winning Products');
 
-  const system = `You are an expert dropshipping product researcher. You find winning products that sell well organically on social media. 
+  const system = `You are an expert dropshipping product researcher. You find winning products that sell well organically on social media.
 You respond ONLY with valid JSON — an array of exactly 4 product objects with these fields:
-- name (string): Product name
-- category (string): Short category tag
-- supplierCost (string): AliExpress estimated cost range e.g. "$3-6"
-- sellPrice (string): Recommended sell price e.g. "$24.99"
-- profitMargin (string): Estimated profit margin % e.g. "65-75%"
-- estimatedProfit (string): Profit per sale e.g. "$16-19"
-- hook (string): One compelling sentence about why this goes viral
-- contentAngle (string): Best content angle for the platform
-- tags (array of 3 strings): category tags like ["trending","problem-solver","visual"]
-- supplierTip (string): Where/how to source this on AliExpress or CJDropshipping`;
+- name, category, supplierCost, sellPrice, profitMargin, estimatedProfit, hook, contentAngle, tags (array of 3 strings), supplierTip`;
 
   const prompt = `Find 4 winning dropshipping products for this niche: "${niche}"
-Platform focus: ${platform}
-${context ? 'Extra requirements: ' + context : ''}
-Products should be visually appealing, solve a real problem, have good organic content potential on ${platform}, and have strong profit margins (60%+). Focus on products that are currently trending or have proven demand.`;
+Platform: ${platform}
+${context ? 'Requirements: ' + context : ''}
+Products should be visual, solve a problem, have strong organic potential and 60%+ margins.`;
 
   try {
     const raw = await callClaude(prompt, system);
-    const clean = raw.replace(/```json|```/g, '').trim();
-    const products = JSON.parse(clean);
+    const products = JSON.parse(raw.replace(/```json|```/g, '').trim());
     renderProducts(products);
-  } catch (e) {
-    showError('researchError', e.message);
-  }
+  } catch (e) { showError('researchError', e.message); }
 
   setLoading('researchBtn', false, '🔍 Find Winning Products');
 }
 
 function renderProducts(products) {
-  const container = document.getElementById('productResults');
-  container.innerHTML = `<div class="product-grid">${products.map(p => `
+  document.getElementById('productResults').innerHTML = `<div class="product-grid">${products.map(p => `
     <div class="product-card">
-      <div class="product-meta">
-        ${p.tags.map(t => `<span class="tag tag-purple">${t}</span>`).join('')}
-      </div>
+      <div class="product-meta">${p.tags.map(t => `<span class="tag tag-purple">${t}</span>`).join('')}</div>
       <div class="product-name">${p.name}</div>
       <div class="product-desc">${p.hook}</div>
       <div style="display:flex;gap:16px;margin-bottom:12px;">
-        <div>
-          <div class="product-profit">${p.estimatedProfit}</div>
-          <div class="product-profit-label">profit/sale</div>
-        </div>
-        <div>
-          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:16px;color:var(--text)">${p.profitMargin}</div>
-          <div class="product-profit-label">margin</div>
-        </div>
-        <div>
-          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:16px;color:var(--text)">${p.sellPrice}</div>
-          <div class="product-profit-label">sell price</div>
-        </div>
+        <div><div class="product-profit">${p.estimatedProfit}</div><div class="product-profit-label">profit/sale</div></div>
+        <div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:16px">${p.profitMargin}</div><div class="product-profit-label">margin</div></div>
+        <div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:16px">${p.sellPrice}</div><div class="product-profit-label">sell price</div></div>
       </div>
-      <div style="background:var(--bg);border-radius:8px;padding:10px;font-size:12px;color:var(--muted2);margin-bottom:10px;line-height:1.5;">
-        <strong style="color:var(--accent3);">📱 Content angle:</strong> ${p.contentAngle}
-      </div>
-      <div style="font-size:12px;color:var(--muted2);line-height:1.5;">
-        <strong style="color:var(--muted);">Source:</strong> ${p.supplierTip}
-      </div>
-      <div style="margin-top:8px;font-size:12px;color:var(--muted);">Cost: ${p.supplierCost} → Sell: ${p.sellPrice}</div>
-    </div>
-  `).join('')}</div>`;
+      <div style="background:var(--bg);border-radius:8px;padding:10px;font-size:12px;color:var(--muted2);margin-bottom:8px;line-height:1.5"><strong style="color:#43e8a0">📱 Content angle:</strong> ${p.contentAngle}</div>
+      <div style="font-size:12px;color:var(--muted2)"><strong style="color:var(--muted)">Source:</strong> ${p.supplierTip}</div>
+    </div>`).join('')}</div>`;
 }
 
-// ── LISTING WRITER ────────────────────
+// ── Listing Writer ────────────────────
 async function runListing() {
   clearError('listingError');
   const product = document.getElementById('listingProduct').value.trim();
-  const audience = document.getElementById('listingAudience').value.trim();
-  const features = document.getElementById('listingFeatures').value.trim();
-  const price = document.getElementById('listingPrice').value.trim();
-  const brand = document.getElementById('listingBrand').value.trim();
-
   if (!product) { showError('listingError', 'Please enter a product name.'); return; }
 
   setLoading('listingBtn', true, '✍️ Generate Full Listing');
 
-  const system = `You are an expert Shopify copywriter who writes high-converting product listings. 
-Your listings are SEO-optimized, emotionally compelling, and designed to convert cold traffic.
-Write in a clear, benefit-focused style. Use formatting with headers and bullet points.`;
+  const system = `You are an expert Shopify copywriter. Write high-converting, SEO-optimized product listings.`;
+  const prompt = `Write a complete Shopify listing for: ${product}
+Audience: ${document.getElementById('listingAudience').value}
+Features: ${document.getElementById('listingFeatures').value}
+Price: ${document.getElementById('listingPrice').value}
+Brand: ${document.getElementById('listingBrand').value}
 
-  const prompt = `Write a complete Shopify product listing for:
-
-Product: ${product}
-${audience ? 'Target audience: ' + audience : ''}
-${features ? 'Key features: ' + features : ''}
-${price ? 'Price: ' + price : ''}
-${brand ? 'Brand: ' + brand : ''}
-
-Include ALL of the following sections, clearly labeled:
-
-**PRODUCT TITLE** (SEO optimized, under 70 chars)
-
-**SHORT DESCRIPTION** (2-3 sentences, goes in Shopify's excerpt/subtitle field)
-
-**MAIN DESCRIPTION** (3-4 paragraphs, emotionally engaging, benefit-focused)
-
-**KEY FEATURES** (6 bullet points, starting with the benefit, then the feature)
-
-**WHO IT'S PERFECT FOR** (3 bullet points describing ideal customer scenarios)
-
-**SEO META TITLE** (under 60 chars)
-
-**SEO META DESCRIPTION** (under 160 chars, includes a call to action)
-
-**TAGS** (10 comma-separated Shopify tags for discoverability)`;
+Include: PRODUCT TITLE, SHORT DESCRIPTION, MAIN DESCRIPTION, KEY FEATURES (6 bullets), WHO IT'S FOR (3 bullets), SEO META TITLE, SEO META DESCRIPTION, TAGS (10 tags)`;
 
   try {
     const result = await callClaude(prompt, system);
     document.getElementById('listingContent').textContent = result;
     document.getElementById('listingResult').classList.add('visible');
-  } catch (e) {
-    showError('listingError', e.message);
-  }
+  } catch(e) { showError('listingError', e.message); }
 
   setLoading('listingBtn', false, '✍️ Generate Full Listing');
 }
 
-// ── CUSTOMER SUPPORT ──────────────────
+// ── Customer Support ──────────────────
 async function runSupport() {
   clearError('supportError');
-  const store = document.getElementById('supportStore').value.trim();
-  const type = document.getElementById('supportType').value;
   const message = document.getElementById('supportMessage').value.trim();
-  const context = document.getElementById('supportContext').value.trim();
-
   if (!message) { showError('supportError', 'Please paste the customer message.'); return; }
 
   setLoading('supportBtn', true, '💬 Generate Reply');
 
-  const system = `You are a professional customer support specialist for a Shopify dropshipping store. 
-You write empathetic, professional, and solution-focused replies that turn unhappy customers into loyal ones.
-Your tone is warm, human, and genuine — never robotic or template-sounding.
-Always acknowledge feelings first, then provide a clear solution.`;
+  const store = document.getElementById('supportStore').value || 'our store';
+  const type = document.getElementById('supportType').value;
+  const context = document.getElementById('supportContext').value;
 
-  const prompt = `Write a professional customer support reply for this ${type}:
-
-Store name: ${store || 'our store'}
-Message type: ${type}
+  const system = `You are a professional customer support specialist for a Shopify dropshipping store. Write empathetic, genuine, solution-focused replies. Never sound like a template.`;
+  const prompt = `Write a reply for this ${type}:
+Store: ${store}
 Customer message: "${message}"
-${context ? 'Additional context: ' + context : ''}
-
-The reply should:
-- Be 150-250 words
-- Start by addressing the customer by name if possible or "Hi there"
-- Acknowledge their specific concern with empathy
-- Provide a clear, actionable solution
-- Set realistic expectations
-- End with a warm, positive closing
-- Feel genuine and personal, not like a template
-- Include your name as "The ${store || 'Support'} Team" in the sign-off`;
+${context ? 'Context: ' + context : ''}
+150-250 words, warm and genuine, clear solution, sign off as "The ${store} Team"`;
 
   try {
     const result = await callClaude(prompt, system);
     document.getElementById('supportContent').textContent = result;
     document.getElementById('supportResult').classList.add('visible');
-  } catch (e) {
-    showError('supportError', e.message);
-  }
+  } catch(e) { showError('supportError', e.message); }
 
   setLoading('supportBtn', false, '💬 Generate Reply');
 }
 
 // ── Copy ──────────────────────────────
 function copyResult(contentId, btn) {
-  const text = document.getElementById(contentId).textContent;
-  navigator.clipboard.writeText(text).then(() => {
+  navigator.clipboard.writeText(document.getElementById(contentId).textContent).then(() => {
     const orig = btn.textContent;
     btn.textContent = '✓ Copied!';
     btn.classList.add('copied');
