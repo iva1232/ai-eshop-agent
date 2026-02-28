@@ -1,1362 +1,857 @@
-<!DOCTYPE html>
+   <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DropAI — Shopify Business Dashboard</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
-
-:root {
-  --bg: #0c0e14;
-  --surface: #13161f;
-  --surface2: #1a1e2a;
-  --border: #252936;
-  --accent: #6c63ff;
-  --accent2: #ff6584;
-  --accent3: #43e8a0;
-  --text: #e8eaf2;
-  --muted: #6b7280;
-  --muted2: #9ca3af;
-  --success: #43e8a0;
-  --warning: #fbbf24;
-  --danger: #f87171;
-}
-
-* { margin: 0; padding: 0; box-sizing: border-box; }
-html { background: var(--bg); }
-
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'DM Sans', 'Segoe UI', system-ui, sans-serif;
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-
-/* ════════════════════════════════════════
-   LOGIN SCREEN
-   ════════════════════════════════════════ */
-#loginScreen {
-  position: fixed;
-  inset: 0;
-  z-index: 200;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--bg);
-  transition: opacity 0.8s ease, transform 0.8s ease;
-}
-
-#loginScreen.exit {
-  opacity: 0;
-  transform: scale(1.04);
-  pointer-events: none;
-}
-
-/* Animated mesh background */
-.login-bg {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-}
-
-.orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
-  animation: float 8s ease-in-out infinite;
-}
-
-.orb-1 {
-  width: 500px; height: 500px;
-  background: radial-gradient(circle, rgba(108,99,255,0.25), transparent 70%);
-  top: -150px; left: -100px;
-  animation-delay: 0s;
-}
-
-.orb-2 {
-  width: 400px; height: 400px;
-  background: radial-gradient(circle, rgba(255,101,132,0.2), transparent 70%);
-  bottom: -100px; right: -80px;
-  animation-delay: -3s;
-}
-
-.orb-3 {
-  width: 300px; height: 300px;
-  background: radial-gradient(circle, rgba(67,232,160,0.15), transparent 70%);
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  animation-delay: -5s;
-}
-
-@keyframes float {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(30px, -20px) scale(1.05); }
-  66% { transform: translate(-20px, 15px) scale(0.97); }
-}
-
-/* Grid lines */
-.login-grid {
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(108,99,255,0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(108,99,255,0.04) 1px, transparent 1px);
-  background-size: 60px 60px;
-}
-
-/* Login card */
-.login-card {
-  position: relative;
-  z-index: 10;
-  width: 100%;
-  max-width: 460px;
-  padding: 0 24px;
-}
-
-.login-logo {
-  text-align: center;
-  margin-bottom: 48px;
-}
-
-.login-logo-text {
-  font-family: 'Syne', sans-serif;
-  font-weight: 800;
-  font-size: 52px;
-  letter-spacing: -2px;
-  background: linear-gradient(135deg, #fff 0%, #a5b4fc 50%, #6c63ff 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  line-height: 1;
-}
-
-.login-logo-sub {
-  font-size: 14px;
-  color: var(--muted2);
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  margin-top: 8px;
-  font-family: 'Syne', sans-serif;
-}
-
-.login-tagline {
-  text-align: center;
-  font-size: 15px;
-  color: var(--muted2);
-  margin-bottom: 40px;
-  line-height: 1.6;
-}
-
-.login-tagline strong { color: var(--text); }
-
-.login-box {
-  background: rgba(19, 22, 31, 0.8);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 20px;
-  padding: 32px;
-  backdrop-filter: blur(20px);
-  box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(108,99,255,0.1);
-}
-
-.login-label {
-  font-family: 'Syne', sans-serif;
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--muted2);
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  margin-bottom: 10px;
-  display: block;
-}
-
-.login-input {
-  width: 100%;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
-  color: var(--text);
-  padding: 14px 18px;
-  border-radius: 12px;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 15px;
-  outline: none;
-  transition: all 0.3s;
-  letter-spacing: 1px;
-}
-
-.login-input:focus {
-  border-color: rgba(108,99,255,0.6);
-  background: rgba(108,99,255,0.06);
-  box-shadow: 0 0 0 4px rgba(108,99,255,0.1);
-}
-
-.login-input::placeholder { color: var(--muted); letter-spacing: 0; }
-
-.login-btn {
-  width: 100%;
-  margin-top: 16px;
-  padding: 15px;
-  background: linear-gradient(135deg, #6c63ff, #8b85ff);
-  border: none;
-  border-radius: 12px;
-  color: #fff;
-  font-family: 'Syne', sans-serif;
-  font-weight: 800;
-  font-size: 16px;
-  letter-spacing: 1px;
-  cursor: pointer;
-  transition: all 0.3s;
-  position: relative;
-  overflow: hidden;
-}
-
-.login-btn::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-.login-btn:hover::before { opacity: 1; }
-.login-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(108,99,255,0.4); }
-.login-btn:active { transform: translateY(0); }
-
-.login-btn.loading {
-  background: linear-gradient(135deg, #4a43cc, #6c63ff);
-  cursor: not-allowed;
-}
-
-.login-hint {
-  text-align: center;
-  margin-top: 20px;
-  font-size: 12px;
-  color: var(--muted);
-  line-height: 1.7;
-}
-
-.login-hint a {
-  color: var(--accent);
-  text-decoration: none;
-}
-
-.login-hint a:hover { text-decoration: underline; }
-
-.login-error {
-  margin-top: 12px;
-  padding: 10px 14px;
-  background: rgba(248,113,113,0.1);
-  border: 1px solid rgba(248,113,113,0.2);
-  border-radius: 8px;
-  font-size: 13px;
-  color: var(--danger);
-  display: none;
-}
-
-.login-error.show { display: block; }
-
-/* Features row */
-.login-features {
-  display: flex;
-  justify-content: center;
-  gap: 24px;
-  margin-top: 28px;
-}
-
-.login-feature {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: var(--muted);
-}
-
-.login-feature-dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: var(--accent);
-  opacity: 0.6;
-}
-
-/* ════════════════════════════════════════
-   TRANSITION OVERLAY
-   ════════════════════════════════════════ */
-#transitionOverlay {
-  position: fixed;
-  inset: 0;
-  z-index: 300;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 20px;
-  background: var(--bg);
-}
-
-#transitionOverlay.active { display: flex; }
-
-.transition-logo {
-  font-family: 'Syne', sans-serif;
-  font-weight: 800;
-  font-size: 42px;
-  background: linear-gradient(135deg, #43e8a0, #6c63ff);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  opacity: 0;
-  transform: scale(0.8);
-  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.transition-logo.show { opacity: 1; transform: scale(1); }
-
-.transition-bar-wrap {
-  width: 200px;
-  height: 3px;
-  background: rgba(255,255,255,0.06);
-  border-radius: 100px;
-  overflow: hidden;
-  opacity: 0;
-  transition: opacity 0.3s 0.3s;
-}
-
-.transition-bar-wrap.show { opacity: 1; }
-
-.transition-bar {
-  height: 100%;
-  width: 0%;
-  background: linear-gradient(90deg, #6c63ff, #43e8a0);
-  border-radius: 100px;
-  transition: width 0.9s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.transition-bar.fill { width: 100%; }
-
-.transition-msg {
-  font-size: 13px;
-  color: var(--muted);
-  opacity: 0;
-  transition: opacity 0.3s 0.5s;
-  letter-spacing: 0.5px;
-}
-
-.transition-msg.show { opacity: 1; }
-
-/* ════════════════════════════════════════
-   MAIN APP (hidden until login)
-   ════════════════════════════════════════ */
-#appShell {
-  display: flex;
-  min-height: 100vh;
-  opacity: 0;
-  transform: translateY(12px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
-}
-
-#appShell.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* ── Sidebar ── */
-.sidebar {
-  width: 240px;
-  min-height: 100vh;
-  background: var(--surface);
-  border-right: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  padding: 24px 0;
-  position: fixed;
-  left: 0; top: 0; bottom: 0;
-  z-index: 50;
-}
-
-.logo { padding: 0 24px 28px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
-
-.logo-text {
-  font-family: 'Syne', sans-serif;
-  font-weight: 800;
-  font-size: 22px;
-  background: linear-gradient(135deg, #6c63ff, #ff6584);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  letter-spacing: -0.5px;
-}
-
-.logo-sub { font-size: 11px; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; margin-top: 2px; }
-
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 11px 24px;
-  cursor: pointer;
-  color: var(--muted2);
-  font-size: 14px;
-  font-weight: 500;
-  border-left: 3px solid transparent;
-  transition: all 0.2s;
-  margin: 1px 0;
-}
-
-.nav-item:hover { color: var(--text); background: rgba(108,99,255,0.06); }
-.nav-item.active { color: var(--accent); background: rgba(108,99,255,0.1); border-left-color: var(--accent); }
-.nav-icon { font-size: 18px; width: 22px; text-align: center; }
-.nav-label { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 600; }
-
-.sidebar-footer { margin-top: auto; padding: 16px 24px; border-top: 1px solid var(--border); }
-
-.user-pill {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-  background: rgba(67,232,160,0.06);
-  border: 1px solid rgba(67,232,160,0.15);
-  border-radius: 10px;
-}
-
-.user-dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  background: var(--success);
-  box-shadow: 0 0 8px var(--success);
-  flex-shrink: 0;
-  animation: pulse-dot 2s infinite;
-}
-
-@keyframes pulse-dot {
-  0%, 100% { box-shadow: 0 0 4px var(--success); }
-  50% { box-shadow: 0 0 14px var(--success), 0 0 28px rgba(67,232,160,0.3); }
-}
-
-.user-info { flex: 1; min-width: 0; }
-.user-status { font-size: 11px; font-weight: 700; color: var(--success); font-family: 'Syne', sans-serif; }
-.user-label { font-size: 10px; color: var(--muted); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-.logout-icon { font-size: 14px; cursor: pointer; opacity: 0.4; transition: opacity 0.2s; color: var(--danger); }
-.logout-icon:hover { opacity: 1; }
-
-/* ── Main ── */
-.main { margin-left: 240px; flex: 1; min-height: 100vh; display: flex; flex-direction: column; }
-
-.topbar {
-  padding: 18px 32px;
-  border-bottom: 1px solid var(--border);
-  background: var(--surface);
-  position: sticky;
-  top: 0;
-  z-index: 40;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.topbar-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 20px; }
-.topbar-sub { font-size: 13px; color: var(--muted); margin-top: 2px; }
-
-.topbar-right {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.topbar-badge {
-  background: rgba(67,232,160,0.1);
-  border: 1px solid rgba(67,232,160,0.25);
-  color: var(--success);
-  padding: 6px 14px;
-  border-radius: 100px;
-  font-size: 12px;
-  font-family: 'Syne', sans-serif;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 7px;
-}
-
-.topbar-badge-dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: var(--success);
-  animation: pulse-dot 2s infinite;
-}
-
-/* ── Content ── */
-.content { flex: 1; padding: 32px; max-width: 900px; }
-.tab-panel { display: none; }
-.tab-panel.active { display: block; }
-
-/* ── Cards ── */
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 28px;
-  margin-bottom: 20px;
-  box-shadow: 0 0 0 1px #252936, 0 4px 24px rgba(108,99,255,0.08);
-}
-
-.card-title {
-  font-family: 'Syne', sans-serif;
-  font-weight: 700;
-  font-size: 16px;
-  margin-bottom: 6px;
-}
-
-.card-desc { font-size: 13px; color: var(--muted2); margin-bottom: 20px; line-height: 1.6; }
-
-/* Stats */
-.stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
-
-.stat-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 20px;
-  position: relative;
-  overflow: hidden;
-}
-
-.stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
-.stat-card.purple::before { background: linear-gradient(90deg, var(--accent), transparent); }
-.stat-card.green::before { background: linear-gradient(90deg, var(--success), transparent); }
-.stat-card.pink::before { background: linear-gradient(90deg, var(--accent2), transparent); }
-
-.stat-number { font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800; margin-bottom: 4px; }
-.stat-label { font-size: 12px; color: var(--muted2); }
-
-/* ── Forms ── */
-.form-group { margin-bottom: 16px; }
-
-.form-label {
-  display: block;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--muted2);
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
-  margin-bottom: 8px;
-  font-family: 'Syne', sans-serif;
-}
-
-.form-input, .form-textarea, .form-select {
-  width: 100%;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 12px 16px;
-  border-radius: 10px;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 14px;
-  outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  resize: none;
-}
-
-.form-input:focus, .form-textarea:focus, .form-select:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(108,99,255,0.12);
-}
-
-.form-input::placeholder, .form-textarea::placeholder { color: var(--muted); }
-.form-select option { background: var(--surface); }
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-
-/* ── Buttons ── */
-.btn-primary {
-  background: linear-gradient(135deg, var(--accent), #8b85ff);
-  color: #fff;
-  border: none;
-  padding: 13px 28px;
-  border-radius: 10px;
-  font-family: 'Syne', sans-serif;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(108,99,255,0.3); }
-.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-
-/* ── Tags ── */
-.tag { display: inline-block; padding: 4px 12px; border-radius: 100px; font-size: 11px; font-weight: 600; font-family: 'Syne', sans-serif; }
-.tag-purple { background: rgba(108,99,255,0.15); color: #a78bfa; }
-.tag-green { background: rgba(67,232,160,0.12); color: var(--success); }
-
-/* ── Result box ── */
-.result-box {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 20px;
-  margin-top: 20px;
-  display: none;
-}
-
-.result-box.visible { display: block; }
-
-.result-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-
-.result-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--accent);
-}
-
-.copy-btn {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  color: var(--muted2);
-  padding: 5px 14px;
-  border-radius: 6px;
-  font-size: 12px;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-family: 'DM Sans', sans-serif;
-}
-
-.copy-btn:hover { color: var(--text); border-color: var(--accent); }
-.copy-btn.copied { color: var(--success); border-color: var(--success); }
-
-.result-content { font-size: 14px; line-height: 1.8; color: var(--text); white-space: pre-wrap; }
-
-/* ── Product grid ── */
-.product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px; }
-
-.product-card {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 18px;
-  transition: border-color 0.2s, transform 0.2s;
-}
-
-.product-card:hover { border-color: var(--accent); transform: translateY(-2px); }
-.product-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; margin-bottom: 8px; }
-.product-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
-.product-desc { font-size: 12px; color: var(--muted2); line-height: 1.5; margin-bottom: 12px; }
-.product-profit { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; color: var(--success); }
-.product-profit-label { font-size: 11px; color: var(--muted); }
-
-/* ── Spinner ── */
-.spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.2); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* ── Error ── */
-.error-box { background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.2); border-radius: 10px; padding: 14px 18px; font-size: 13px; color: var(--danger); margin-top: 16px; display: none; }
-.error-box.visible { display: block; }
-
-/* ── Tip box ── */
-.tip-box { background: rgba(108,99,255,0.07); border: 1px solid rgba(108,99,255,0.2); border-radius: 10px; padding: 14px 18px; font-size: 13px; color: var(--muted2); line-height: 1.6; margin-bottom: 20px; display: flex; gap: 12px; align-items: flex-start; }
-.tip-icon { font-size: 18px; flex-shrink: 0; }
-
-/* ── Checklist ── */
-.checklist { list-style: none; }
-.checklist li { padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; display: flex; align-items: flex-start; gap: 12px; line-height: 1.5; }
-.checklist li:last-child { border-bottom: none; }
-.check-num { background: rgba(108,99,255,0.15); color: var(--accent); font-family: 'Syne', sans-serif; font-weight: 700; font-size: 11px; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
-
-/* ── Home welcome ── */
-.welcome-hero {
-  background: linear-gradient(135deg, rgba(108,99,255,0.08), rgba(67,232,160,0.04));
-  border: 1px solid rgba(108,99,255,0.15);
-  border-radius: 20px;
-  padding: 32px;
-  margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-}
-
-.welcome-text h2 {
-  font-family: 'Syne', sans-serif;
-  font-size: 24px;
-  font-weight: 800;
-  margin-bottom: 8px;
-  background: linear-gradient(135deg, var(--text), #a5b4fc);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.welcome-text p { font-size: 14px; color: var(--muted2); line-height: 1.6; max-width: 420px; }
-
-.welcome-emoji { font-size: 64px; flex-shrink: 0; }
-
-.tool-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 20px; }
-
-.tool-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 20px;
-  cursor: pointer;
-  transition: all 0.25s;
-  position: relative;
-  overflow: hidden;
-}
-
-.tool-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  transition: opacity 0.25s;
-}
-
-.tool-card.tc-purple::before { background: linear-gradient(135deg, rgba(108,99,255,0.08), transparent); }
-.tool-card.tc-green::before { background: linear-gradient(135deg, rgba(67,232,160,0.08), transparent); }
-.tool-card.tc-pink::before { background: linear-gradient(135deg, rgba(255,101,132,0.08), transparent); }
-
-.tool-card:hover::before { opacity: 1; }
-.tool-card:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,0.2); }
-.tool-card:hover.tc-purple { border-color: rgba(108,99,255,0.4); }
-.tool-card:hover.tc-green { border-color: rgba(67,232,160,0.4); }
-.tool-card:hover.tc-pink { border-color: rgba(255,101,132,0.4); }
-
-.tool-icon { font-size: 32px; margin-bottom: 12px; }
-.tool-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; margin-bottom: 4px; position: relative; }
-.tool-desc { font-size: 12px; color: var(--muted2); line-height: 1.5; position: relative; }
-.tool-arrow { position: absolute; top: 20px; right: 20px; color: var(--muted); font-size: 18px; transition: transform 0.2s; }
-.tool-card:hover .tool-arrow { transform: translate(3px, -3px); }
-
-@media (max-width: 768px) {
-  .sidebar { width: 60px; }
-  .nav-label, .logo-sub, .sidebar-footer { display: none; }
-  .main { margin-left: 60px; }
-  .product-grid, .tool-grid, .form-row { grid-template-columns: 1fr; }
-  .stats-grid { grid-template-columns: 1fr 1fr; }
-  .welcome-hero { flex-direction: column; text-align: center; }
-  .welcome-emoji { display: none; }
-  .content { padding: 20px; }
-  .topbar { padding: 16px 20px; }
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DropAI — Shopify Business Dashboard</title>
+    <style>
+        :root {
+            --bg: #0d0d0d;
+            --card: #1a1a1a;
+            --border: #2a2a2a;
+            --accent: #7c3aed;
+            --accent2: #a855f7;
+            --green: #22c55e;
+            --text: #f1f5f9;
+            --muted: #94a3b8;
+            --red: #f87171;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            min-height: 100vh;
+        }
+
+        /* ── HEADER ── */
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--border);
+            background: rgba(13,13,13,0.97);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+            gap: 1rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .btn-download {
+            padding: 0.4rem 1rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            border: 1px solid rgba(124,58,237,0.4);
+            background: rgba(124,58,237,0.12);
+            color: var(--accent2);
+            transition: all 0.2s;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            text-decoration: none;
+        }
+        .btn-download:hover {
+            background: rgba(124,58,237,0.25);
+            border-color: rgba(124,58,237,0.7);
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 1rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: 1px solid rgba(234,179,8,0.3);
+            background: rgba(234,179,8,0.1);
+            color: #eab308;
+            transition: all 0.4s;
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+        }
+        .status-badge.connected {
+            background: rgba(34,197,94,0.1);
+            border-color: rgba(34,197,94,0.3);
+            color: var(--green);
+        }
+        .status-badge.error {
+            background: rgba(239,68,68,0.1);
+            border-color: rgba(239,68,68,0.3);
+            color: var(--red);
+        }
+        .dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+        /* ── KEY MODAL ── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(6px);
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .modal-overlay.hidden { display: none; }
+
+        .modal {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 460px;
+            width: 100%;
+        }
+        .modal h2 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #fff 40%, var(--accent2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .modal p {
+            color: var(--muted);
+            font-size: 0.87rem;
+            line-height: 1.6;
+            margin-bottom: 1.2rem;
+        }
+        .modal p a { color: var(--accent2); text-decoration: none; }
+
+        .key-input-wrap {
+            display: flex;
+            gap: 0.6rem;
+        }
+        .key-input-wrap input {
+            flex: 1;
+            background: #111;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.8rem 1rem;
+            color: var(--text);
+            font-size: 0.9rem;
+            font-family: monospace;
+            letter-spacing: 0.05em;
+        }
+        .key-input-wrap input:focus { outline: none; border-color: var(--accent); }
+
+        .modal-note {
+            margin-top: 1rem;
+            font-size: 0.78rem;
+            color: var(--muted);
+            background: rgba(124,58,237,0.07);
+            border: 1px solid rgba(124,58,237,0.18);
+            border-radius: 8px;
+            padding: 0.7rem 0.9rem;
+            line-height: 1.55;
+        }
+
+        .modal-error {
+            margin-top: 0.75rem;
+            font-size: 0.82rem;
+            color: var(--red);
+            display: none;
+        }
+        .modal-error.visible { display: block; }
+
+        /* ── HERO ── */
+        .hero {
+            text-align: center;
+            padding: 3.5rem 2rem 1.5rem;
+        }
+        .hero h1 {
+            font-size: 2.4rem;
+            font-weight: 800;
+            margin-bottom: 0.8rem;
+            background: linear-gradient(135deg, #fff 40%, var(--accent2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero p {
+            color: var(--muted);
+            font-size: 1.05rem;
+            max-width: 580px;
+            margin: 0 auto 2rem;
+            line-height: 1.6;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            padding: 1.5rem 2rem;
+            max-width: 520px;
+            margin: 0 auto;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+        .stat { text-align: center; }
+        .stat .value { font-size: 1.4rem; font-weight: 800; color: var(--accent2); }
+        .stat .label { font-size: 0.78rem; color: var(--muted); margin-top: 0.2rem; }
+
+        /* ── MAIN ── */
+        .main {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem 5rem;
+        }
+
+        /* ── TABS ── */
+        .tabs {
+            display: flex;
+            gap: 0.4rem;
+            margin-bottom: 1.5rem;
+            background: var(--card);
+            padding: 0.4rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+        .tab {
+            flex: 1;
+            padding: 0.7rem 1rem;
+            border: none;
+            background: transparent;
+            color: var(--muted);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.88rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .tab:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+        .tab.active {
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            color: white;
+        }
+
+        .panel { display: none; }
+        .panel.active { display: block; }
+
+        /* ── TOOL CARD ── */
+        .tool-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+        }
+        .tool-card h2 { font-size: 1.15rem; font-weight: 700; margin-bottom: 0.4rem; }
+        .tool-card > p {
+            color: var(--muted);
+            font-size: 0.88rem;
+            margin-bottom: 1.2rem;
+            line-height: 1.6;
+        }
+
+        textarea, input[type="text"], input[type="password"] {
+            width: 100%;
+            background: #111;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.85rem 1rem;
+            color: var(--text);
+            font-size: 0.93rem;
+            font-family: inherit;
+            transition: border-color 0.2s;
+            margin-bottom: 1rem;
+            display: block;
+        }
+        textarea { resize: vertical; min-height: 100px; }
+        textarea:focus, input:focus { outline: none; border-color: var(--accent); }
+
+        /* ── BUTTONS ── */
+        .btn {
+            padding: 0.8rem 1.8rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.92rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            color: white;
+        }
+        .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+        .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+        /* ── RESULTS ── */
+        .result-box {
+            margin-top: 1.2rem;
+            background: #111;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.2rem;
+            font-size: 0.9rem;
+            line-height: 1.75;
+            display: none;
+        }
+        .result-box.visible { display: block; }
+        .result-box.loading {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            color: var(--muted);
+        }
+
+        .spinner {
+            width: 20px; height: 20px; min-width: 20px;
+            border: 2px solid var(--border);
+            border-top-color: var(--accent2);
+            border-radius: 50%;
+            animation: spin 0.75s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.9rem;
+            padding-bottom: 0.7rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .result-label {
+            font-size: 0.75rem;
+            color: var(--muted);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+        .btn-copy {
+            padding: 0.28rem 0.75rem;
+            font-size: 0.78rem;
+            background: rgba(124,58,237,0.15);
+            border: 1px solid rgba(124,58,237,0.35);
+            border-radius: 6px;
+            color: var(--accent2);
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+            font-family: inherit;
+        }
+        .btn-copy:hover { background: rgba(124,58,237,0.28); }
+
+        .error-box {
+            background: rgba(239,68,68,0.08);
+            border: 1px solid rgba(239,68,68,0.25);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            color: var(--red);
+            font-size: 0.88rem;
+            margin-top: 1rem;
+            display: none;
+        }
+        .error-box.visible { display: block; }
+
+        /* ── PRIVACY NOTICE ── */
+        .privacy-notice {
+            background: rgba(124,58,237,0.05);
+            border: 1px solid rgba(124,58,237,0.18);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            font-size: 0.8rem;
+            color: var(--muted);
+            margin-top: 1.2rem;
+            line-height: 1.5;
+        }
+        .privacy-notice a { color: var(--accent2); text-decoration: none; }
+
+        /* ── ROADMAP ── */
+        .section-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .roadmap-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-top: 2.5rem;
+        }
+        .step {
+            display: flex;
+            gap: 1rem;
+            padding: 0.85rem 0;
+            border-bottom: 1px solid var(--border);
+            align-items: flex-start;
+        }
+        .step:last-of-type { border-bottom: none; }
+        .step-num {
+            width: 28px; height: 28px; min-width: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.72rem; font-weight: 800;
+            margin-top: 0.1rem;
+        }
+        .step-text { font-size: 0.88rem; line-height: 1.65; color: var(--muted); }
+        .step-text strong { color: var(--text); }
+
+        /* ── TIMELINE ── */
+        .timeline {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 0.9rem;
+            margin-top: 1.5rem;
+        }
+        .timeline-item {
+            background: #111;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+        }
+        .timeline-item .month { font-size: 0.75rem; color: var(--muted); margin-bottom: 0.3rem; }
+        .timeline-item .income { font-size: 1.1rem; font-weight: 800; color: var(--accent2); }
+        .timeline-item .desc { font-size: 0.73rem; color: var(--muted); margin-top: 0.3rem; }
+
+        /* ── PRIVACY FULL ── */
+        .privacy-full {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: 0.83rem;
+            color: var(--muted);
+            line-height: 1.85;
+        }
+        .privacy-full h3 { color: var(--text); margin-bottom: 0.9rem; font-size: 1rem; }
+        .privacy-full strong { color: var(--text); }
+        .privacy-full a { color: var(--accent2); text-decoration: none; }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            border-top: 1px solid var(--border);
+            color: var(--muted);
+            font-size: 0.78rem;
+        }
+        footer a { color: var(--accent2); text-decoration: none; }
+
+        @media (max-width: 600px) {
+            .hero h1 { font-size: 1.75rem; }
+            .tabs { flex-direction: column; }
+            .stats { gap: 1.5rem; }
+            header { padding: 1rem; }
+            .key-input-wrap { flex-direction: column; }
+            .btn-download span { display: none; }
+        }
+    </style>
 </head>
 <body>
 
-<!-- ════════════ LOGIN SCREEN ════════════ -->
-<div id="loginScreen">
-  <div class="login-bg">
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="orb orb-3"></div>
-    <div class="login-grid"></div>
-  </div>
-
-  <div class="login-card">
-    <div class="login-logo">
-      <div class="login-logo-text">DropAI</div>
-      <div class="login-logo-sub">Shopify Business Assistant</div>
+<!-- ══════════════════════════════════════
+     API KEY MODAL
+══════════════════════════════════════ -->
+<div class="modal-overlay" id="keyModal">
+    <div class="modal">
+        <h2>🔑 Enter Your Anthropic API Key</h2>
+        <p>
+            Your key is used <strong>only in this browser session</strong> to call Claude AI directly.
+            It is <strong>never saved, never sent anywhere else</strong>, and disappears the moment you close this tab.
+            Get a free key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>
+        </p>
+        <div class="key-input-wrap">
+            <input type="password" id="keyInput" placeholder="sk-ant-api03-..." autocomplete="off" />
+            <button class="btn btn-primary" onclick="saveKey()">Connect</button>
+        </div>
+        <p class="modal-error" id="keyError">⚠️ That doesn't look right — key should start with <strong>sk-ant-</strong></p>
+        <div class="modal-note">
+            🔒 No backend server here. Your key stays in your browser's memory only and is cleared on refresh. Only use this on your own personal device.
+        </div>
     </div>
-
-    <p class="login-tagline">Your <strong>AI-powered co-pilot</strong> for finding products,<br>writing listings, and handling customers.</p>
-
-    <div class="login-box">
-      <label class="login-label" for="loginKey">Claude API Key</label>
-      <input
-        type="password"
-        class="login-input"
-        id="loginKey"
-        placeholder="sk-ant-api03-..."
-        autocomplete="off"
-      />
-      <div class="login-error" id="loginError"></div>
-      <button class="login-btn" id="loginBtn" onclick="handleLogin()">
-        Launch Dashboard →
-      </button>
-      <div class="login-hint">
-        Get a free key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a><br>
-        Your key is stored only in your browser. Never shared.
-      </div>
-    </div>
-
-    <div class="login-features">
-      <div class="login-feature"><div class="login-feature-dot"></div>Product Research</div>
-      <div class="login-feature"><div class="login-feature-dot" style="background:var(--accent2)"></div>Listing Writer</div>
-      <div class="login-feature"><div class="login-feature-dot" style="background:var(--success)"></div>Customer Support</div>
-    </div>
-  </div>
 </div>
 
-<!-- ════════════ TRANSITION OVERLAY ════════════ -->
-<div id="transitionOverlay">
-  <div class="transition-logo" id="transitionLogo">DropAI</div>
-  <div class="transition-bar-wrap" id="transitionBarWrap">
-    <div class="transition-bar" id="transitionBar"></div>
-  </div>
-  <div class="transition-msg" id="transitionMsg">Connecting to Claude AI...</div>
+<!-- ══════════════════════════════════════
+     HEADER
+══════════════════════════════════════ -->
+<header>
+    <div class="logo">DropAI</div>
+    <div class="header-right">
+        <button class="btn-download" onclick="downloadFile()" title="Download this file">
+            ⬇️ <span>Download</span>
+        </button>
+        <div class="status-badge" id="statusBadge" onclick="resetKey()" title="Click to change API key">
+            <div class="dot"></div>
+            <span id="statusText">No API Key</span>
+        </div>
+    </div>
+</header>
+
+<!-- ══════════════════════════════════════
+     HERO
+══════════════════════════════════════ -->
+<div class="hero">
+    <h1>Shopify Business Assistant</h1>
+    <p>Your <strong>AI-powered co-pilot</strong> for finding products, writing listings, and handling customers — all in seconds.</p>
+    <div class="stats">
+        <div class="stat"><div class="value">$0</div><div class="label">Startup Cost</div></div>
+        <div class="stat"><div class="value">∞</div><div class="label">Products to Find</div></div>
+        <div class="stat"><div class="value">3</div><div class="label">AI Tools Active</div></div>
+    </div>
 </div>
 
-<!-- ════════════ MAIN APP ════════════ -->
-<div id="appShell">
+<!-- ══════════════════════════════════════
+     MAIN CONTENT
+══════════════════════════════════════ -->
+<div class="main">
 
-  <!-- Sidebar -->
-  <nav class="sidebar">
-    <div class="logo">
-      <div class="logo-text">DropAI</div>
-      <div class="logo-sub">Shopify Assistant</div>
+    <!-- TABS -->
+    <div class="tabs">
+        <button class="tab active" onclick="switchTab('research', this)">🔍 Product Research</button>
+        <button class="tab" onclick="switchTab('listing', this)">📝 Listing Writer</button>
+        <button class="tab" onclick="switchTab('support', this)">💬 Customer Support</button>
     </div>
 
-    <div class="nav-item active" data-tab="home">
-      <span class="nav-icon">🏠</span>
-      <span class="nav-label">Home</span>
-    </div>
-    <div class="nav-item" data-tab="research">
-      <span class="nav-icon">🔍</span>
-      <span class="nav-label">Product Research</span>
-    </div>
-    <div class="nav-item" data-tab="listings">
-      <span class="nav-icon">📝</span>
-      <span class="nav-label">Listing Writer</span>
-    </div>
-    <div class="nav-item" data-tab="support">
-      <span class="nav-icon">💬</span>
-      <span class="nav-label">Customer Support</span>
-    </div>
-    <div class="nav-item" data-tab="guide">
-      <span class="nav-icon">🗺️</span>
-      <span class="nav-label">Start Guide</span>
+    <!-- PANEL: Research -->
+    <div id="panel-research" class="panel active">
+        <div class="tool-card">
+            <h2>🔍 Product Research Engine</h2>
+            <p>Describe a niche, audience, or interest — get 4 winning product ideas with AliExpress sourcing tips, profit margins, and TikTok/Instagram content angles.</p>
+            <textarea id="research-input" placeholder="e.g. fitness accessories for home workouts, pet gadgets, kitchen tools for college students..."></textarea>
+            <button class="btn btn-primary" id="research-btn" onclick="runResearch()">🔍 Find Products</button>
+            <div class="result-box" id="research-result"></div>
+            <div class="error-box" id="research-error"></div>
+        </div>
     </div>
 
-    <div class="sidebar-footer">
-      <div class="user-pill">
-        <div class="user-dot"></div>
-        <div class="user-info">
-          <div class="user-status">AI Connected</div>
-          <div class="user-label" id="keyPreview">sk-ant-...</div>
+    <!-- PANEL: Listing -->
+    <div id="panel-listing" class="panel">
+        <div class="tool-card">
+            <h2>📝 Shopify Listing Generator</h2>
+            <p>Enter a product name and optional details — get a full, conversion-optimized Shopify listing ready to copy-paste into your store.</p>
+            <input type="text" id="listing-name" placeholder="Product name (e.g. Magnetic Car Phone Mount)" />
+            <textarea id="listing-details" placeholder="Optional: color options, key features, target audience, price range..."></textarea>
+            <button class="btn btn-primary" id="listing-btn" onclick="runListing()">📝 Generate Listing</button>
+            <div class="result-box" id="listing-result"></div>
+            <div class="error-box" id="listing-error"></div>
         </div>
-        <div class="logout-icon" onclick="logout()" title="Disconnect">⏻</div>
-      </div>
-    </div>
-  </nav>
-
-  <!-- Main -->
-  <div class="main">
-    <div class="topbar">
-      <div>
-        <div class="topbar-title" id="topbarTitle">Dashboard</div>
-        <div class="topbar-sub" id="topbarSub">Welcome back — ready to build?</div>
-      </div>
-      <div class="topbar-right">
-        <div class="topbar-badge">
-          <div class="topbar-badge-dot"></div>
-          Claude AI Active
-        </div>
-      </div>
     </div>
 
-    <div class="content">
-
-      <!-- HOME -->
-      <div class="tab-panel active" id="tab-home">
-        <div class="welcome-hero">
-          <div class="welcome-text">
-            <h2>Ready to build your store? 🚀</h2>
-            <p>Your AI business assistant is live. Use the tools below to research winning products, generate Shopify listings, and handle customer messages — all in seconds.</p>
-          </div>
-          <div class="welcome-emoji">💰</div>
+    <!-- PANEL: Support -->
+    <div id="panel-support" class="panel">
+        <div class="tool-card">
+            <h2>💬 Customer Support AI</h2>
+            <p>Paste any customer message and get a professional, empathetic reply drafted in seconds — ready to send.</p>
+            <textarea id="support-input" placeholder="Paste the customer message here..." style="min-height:130px;"></textarea>
+            <button class="btn btn-primary" id="support-btn" onclick="runSupport()">💬 Draft Reply</button>
+            <div class="result-box" id="support-result"></div>
+            <div class="error-box" id="support-error"></div>
         </div>
-
-        <div class="tool-grid">
-          <div class="tool-card tc-purple" onclick="switchTab('research')">
-            <div class="tool-arrow">↗</div>
-            <div class="tool-icon">🔍</div>
-            <div class="tool-name">Product Research</div>
-            <div class="tool-desc">Find trending dropship products with profit estimates and supplier tips</div>
-          </div>
-          <div class="tool-card tc-green" onclick="switchTab('listings')">
-            <div class="tool-arrow">↗</div>
-            <div class="tool-icon">📝</div>
-            <div class="tool-name">Listing Writer</div>
-            <div class="tool-desc">Generate complete Shopify product pages — title, description, SEO tags</div>
-          </div>
-          <div class="tool-card tc-pink" onclick="switchTab('support')">
-            <div class="tool-arrow">↗</div>
-            <div class="tool-icon">💬</div>
-            <div class="tool-name">Customer Support</div>
-            <div class="tool-desc">Draft professional replies to any customer message instantly</div>
-          </div>
-        </div>
-
-        <div class="stats-grid">
-          <div class="stat-card purple">
-            <div class="stat-number">3</div>
-            <div class="stat-label">AI Tools Active</div>
-          </div>
-          <div class="stat-card green">
-            <div class="stat-number">$0</div>
-            <div class="stat-label">Startup Cost</div>
-          </div>
-          <div class="stat-card pink">
-            <div class="stat-number">∞</div>
-            <div class="stat-label">Products to Find</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- PRODUCT RESEARCH -->
-      <div class="tab-panel" id="tab-research">
-        <div class="card">
-          <div class="card-title">🔍 Product Research Engine</div>
-          <div class="card-desc">Describe a niche, audience, or interest and the AI will generate 4 winning product ideas with AliExpress sourcing tips, estimated profit margins, and organic content angles for TikTok/Instagram.</div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label">Niche or Audience</label>
-              <input type="text" class="form-input" id="researchNiche" placeholder="e.g. pet owners, gym beginners, new moms..." />
-            </div>
-            <div class="form-group">
-              <label class="form-label">Trending Platform</label>
-              <select class="form-select" id="researchPlatform">
-                <option value="TikTok">TikTok (viral potential)</option>
-                <option value="Instagram Reels">Instagram Reels</option>
-                <option value="Pinterest">Pinterest</option>
-                <option value="YouTube Shorts">YouTube Shorts</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Extra context (optional)</label>
-            <input type="text" class="form-input" id="researchContext" placeholder="e.g. under $30, solves a problem, visually satisfying..." />
-          </div>
-
-          <button class="btn-primary" id="researchBtn" onclick="runResearch()">🔍 Find Winning Products</button>
-          <div class="error-box" id="researchError"></div>
-          <div id="productResults"></div>
-        </div>
-      </div>
-
-      <!-- LISTING WRITER -->
-      <div class="tab-panel" id="tab-listings">
-        <div class="card">
-          <div class="card-title">📝 Shopify Listing Generator</div>
-          <div class="card-desc">Enter a product name and details — the AI writes a complete, conversion-optimized Shopify listing ready to copy-paste.</div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label">Product Name</label>
-              <input type="text" class="form-input" id="listingProduct" placeholder="e.g. Posture Corrector Brace..." />
-            </div>
-            <div class="form-group">
-              <label class="form-label">Target Audience</label>
-              <input type="text" class="form-input" id="listingAudience" placeholder="e.g. office workers with back pain..." />
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label">Key Features (comma separated)</label>
-              <input type="text" class="form-input" id="listingFeatures" placeholder="e.g. adjustable, lightweight, breathable..." />
-            </div>
-            <div class="form-group">
-              <label class="form-label">Your Selling Price</label>
-              <input type="text" class="form-input" id="listingPrice" placeholder="e.g. $29.99" />
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Brand / Store Name</label>
-            <input type="text" class="form-input" id="listingBrand" placeholder="e.g. PurePosture, or leave blank" />
-          </div>
-
-          <button class="btn-primary" id="listingBtn" onclick="runListing()">✍️ Generate Full Listing</button>
-          <div class="error-box" id="listingError"></div>
-
-          <div class="result-box" id="listingResult">
-            <div class="result-header">
-              <div class="result-title">✅ Shopify Listing Ready</div>
-              <button class="copy-btn" onclick="copyResult('listingContent', this)">Copy All</button>
-            </div>
-            <div class="result-content" id="listingContent"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- CUSTOMER SUPPORT -->
-      <div class="tab-panel" id="tab-support">
-        <div class="card">
-          <div class="card-title">💬 Customer Support AI</div>
-          <div class="card-desc">Paste any customer message and get a professional, empathetic reply drafted in seconds.</div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label">Your Store Name</label>
-              <input type="text" class="form-input" id="supportStore" placeholder="e.g. TrendVault" />
-            </div>
-            <div class="form-group">
-              <label class="form-label">Message Type</label>
-              <select class="form-select" id="supportType">
-                <option value="general inquiry">General Inquiry</option>
-                <option value="angry complaint">Angry Complaint</option>
-                <option value="refund request">Refund Request</option>
-                <option value="shipping delay question">Shipping Delay</option>
-                <option value="wrong item received">Wrong Item</option>
-                <option value="product not working">Product Issue</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Customer Message</label>
-            <textarea class="form-textarea" id="supportMessage" rows="5" placeholder="Paste the customer's message here..."></textarea>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Additional context (optional)</label>
-            <input type="text" class="form-input" id="supportContext" placeholder="e.g. their order arrived 2 days late, we can offer 10% refund..." />
-          </div>
-
-          <button class="btn-primary" id="supportBtn" onclick="runSupport()">💬 Generate Reply</button>
-          <div class="error-box" id="supportError"></div>
-
-          <div class="result-box" id="supportResult">
-            <div class="result-header">
-              <div class="result-title">✅ Customer Reply Ready</div>
-              <button class="copy-btn" onclick="copyResult('supportContent', this)">Copy</button>
-            </div>
-            <div class="result-content" id="supportContent"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- START GUIDE -->
-      <div class="tab-panel" id="tab-guide">
-        <div class="card">
-          <div class="card-title">🗺️ Your $0 Dropshipping Roadmap</div>
-          <div class="card-desc">A step-by-step guide to launching your first Shopify store with organic traffic only.</div>
-          <ul class="checklist">
-            <li><span class="check-num">1</span><div><strong>Use Product Research</strong> to find 3–5 product ideas. Look for products that are visual, solve a real problem, and have a "wow" factor.</div></li>
-            <li><span class="check-num">2</span><div><strong>Source from AliExpress or CJDropshipping.</strong> Filter by orders (10,000+) and rating (4.5+). Aim to sell at 3–5x the supplier cost.</div></li>
-            <li><span class="check-num">3</span><div><strong>Create your Shopify store.</strong> Use Shopify's free trial. Pick the Dawn theme (free). Name your store something simple and brandable.</div></li>
-            <li><span class="check-num">4</span><div><strong>Install DSers (free)</strong> from the Shopify App Store. It connects AliExpress products and automates order fulfillment.</div></li>
-            <li><span class="check-num">5</span><div><strong>Use Listing Writer</strong> to generate product descriptions. Upload 5–8 product images from AliExpress.</div></li>
-            <li><span class="check-num">6</span><div><strong>Set up TikTok or Instagram.</strong> Post 1–3 short videos per day showing the product. Use trending sounds. No face needed.</div></li>
-            <li><span class="check-num">7</span><div><strong>Content formula:</strong> Hook (0–2s) → Problem → Product as solution → "Link in bio". Keep videos 15–30 seconds.</div></li>
-            <li><span class="check-num">8</span><div><strong>First sale comes in 1–3 weeks</strong> of consistent posting. Once a video hits 50K+ views, make more like it.</div></li>
-            <li><span class="check-num">9</span><div><strong>Use Customer Support</strong> to handle all messages. Respond within 24 hours.</div></li>
-            <li><span class="check-num">10</span><div><strong>Scale what works.</strong> When a product hits $500/month, put $100 into TikTok Spark Ads on your best video.</div></li>
-          </ul>
-        </div>
-
-        <div class="card">
-          <div class="card-title">💰 Realistic Income Timeline</div>
-          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;font-size:12px;">
-            <div style="background:var(--bg);padding:14px;border-radius:10px;border:1px solid var(--border);text-align:center;">
-              <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:var(--muted2);">Month 1</div>
-              <div style="color:var(--warning);font-weight:600;margin:6px 0;">$0–$200</div>
-              <div style="color:var(--muted);line-height:1.5">Setup & first sales</div>
-            </div>
-            <div style="background:var(--bg);padding:14px;border-radius:10px;border:1px solid var(--border);text-align:center;">
-              <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:var(--muted2);">Month 2</div>
-              <div style="color:var(--warning);font-weight:600;margin:6px 0;">$200–$800</div>
-              <div style="color:var(--muted);line-height:1.5">Building audience</div>
-            </div>
-            <div style="background:var(--bg);padding:14px;border-radius:10px;border:1px solid var(--border);text-align:center;">
-              <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:var(--muted2);">Month 3</div>
-              <div style="color:var(--success);font-weight:600;margin:6px 0;">$500–$2K</div>
-              <div style="color:var(--muted);line-height:1.5">Viral video potential</div>
-            </div>
-            <div style="background:var(--bg);padding:14px;border-radius:10px;border:1px solid var(--border);text-align:center;">
-              <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:var(--muted2);">Month 6+</div>
-              <div style="color:var(--success);font-weight:600;margin:6px 0;">$2K–$10K+</div>
-              <div style="color:var(--muted);line-height:1.5">Reinvesting in ads</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
     </div>
-  </div>
+
+    <div class="privacy-notice">
+        🔒 <strong>Your key stays only in this tab's memory.</strong> Cleared on close or refresh. No data stored, no tracking. <a href="#privacy">Privacy details ↓</a>
+    </div>
+
+    <!-- ══ ROADMAP ══ -->
+    <div class="roadmap-card">
+        <div class="section-title">🗺️ Your $0 Dropshipping Roadmap</div>
+        <div class="step"><div class="step-num">1</div><div class="step-text"><strong>Use Product Research</strong> to find 3–5 ideas. Look for products that are visual, solve a real problem, and have a "wow" factor.</div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-text"><strong>Source from AliExpress or CJDropshipping.</strong> Filter by 10,000+ orders and 4.5+ rating. Aim to sell at 3–5× the supplier cost.</div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-text"><strong>Create your Shopify store.</strong> Use Shopify's free trial. Pick the Dawn theme (free). Choose a simple, brandable name.</div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-text"><strong>Install DSers (free)</strong> from the Shopify App Store. It connects AliExpress products and automates order fulfillment.</div></div>
+        <div class="step"><div class="step-num">5</div><div class="step-text"><strong>Use Listing Writer</strong> to generate product descriptions. Upload 5–8 product images from AliExpress.</div></div>
+        <div class="step"><div class="step-num">6</div><div class="step-text"><strong>Set up TikTok or Instagram.</strong> Post 1–3 short videos per day showing the product. Use trending sounds. No face needed.</div></div>
+        <div class="step"><div class="step-num">7</div><div class="step-text"><strong>Content formula:</strong> Hook (0–2s) → Problem → Product as solution → "Link in bio". Keep videos 15–30 seconds.</div></div>
+        <div class="step"><div class="step-num">8</div><div class="step-text"><strong>First sale in 1–3 weeks</strong> of consistent posting. Once a video hits 50K+ views, make more just like it.</div></div>
+        <div class="step"><div class="step-num">9</div><div class="step-text"><strong>Use Customer Support AI</strong> to handle all messages. Respond within 24 hours every time.</div></div>
+        <div class="step"><div class="step-num">10</div><div class="step-text"><strong>Scale what works.</strong> When a product hits $500/month, put $100 into TikTok Spark Ads on your best video.</div></div>
+
+        <div class="section-title" style="margin-top:2rem;">💰 Realistic Income Timeline</div>
+        <div class="timeline">
+            <div class="timeline-item"><div class="month">Month 1</div><div class="income">$0–$200</div><div class="desc">Setup & first sales</div></div>
+            <div class="timeline-item"><div class="month">Month 2</div><div class="income">$200–$800</div><div class="desc">Building audience</div></div>
+            <div class="timeline-item"><div class="month">Month 3</div><div class="income">$500–$2K</div><div class="desc">Viral potential</div></div>
+            <div class="timeline-item"><div class="month">Month 6+</div><div class="income">$2K–$10K+</div><div class="desc">Reinvesting in ads</div></div>
+        </div>
+    </div>
+
+    <!-- ══ PRIVACY ══ -->
+    <div class="privacy-full" id="privacy">
+        <h3>🔒 Privacy & Data Policy</h3>
+        <strong>Your API Key:</strong> Stored only in JavaScript memory. Never written to localStorage, cookies, or any server. Gone when you refresh or close the tab.<br><br>
+        <strong>Your Inputs:</strong> Sent directly from your browser to Anthropic's API. Not routed through any third-party server.<br><br>
+        <strong>AI Processing:</strong> Powered by Anthropic Claude. See <a href="https://www.anthropic.com/privacy" target="_blank">Anthropic's Privacy Policy →</a><br><br>
+        <strong>No Tracking:</strong> No cookies, no analytics, no ads, no data sold — ever.<br><br>
+        <strong>Recommendation:</strong> For a team or public-facing deployment, use the multi-file version with a secure backend so the API key never touches the browser.
+    </div>
+
 </div>
 
+<footer>
+    <p>DropAI © 2025 · Powered by <a href="https://anthropic.com" target="_blank">Claude AI</a> · <a href="#privacy">Privacy Policy</a></p>
+</footer>
+
+<!-- ══════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════ -->
 <script>
-let apiKey = '';
+'use strict';
 
-// ── Check if already logged in ──────────
+// ── State ─────────────────────────────────────────
+let ANTHROPIC_KEY = null;
+
+// ── Download button ───────────────────────────────
+function downloadFile() {
+    const html = document.documentElement.outerHTML;
+    const blob = new Blob([html], { type: 'text/html' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = 'dropai.html';
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+// ── Key modal ─────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
-  const saved = localStorage.getItem('dropai_key');
-  if (saved) {
-    apiKey = saved;
-    document.getElementById('loginKey').value = saved;
-    launchApp(true); // instant, no animation
-  }
+    document.getElementById('keyInput').addEventListener('keydown', e => {
+        if (e.key === 'Enter') saveKey();
+    });
 });
 
-// ── Login handler ────────────────────────
-function handleLogin() {
-  const val = document.getElementById('loginKey').value.trim();
-  const err = document.getElementById('loginError');
-  const btn = document.getElementById('loginBtn');
-
-  err.classList.remove('show');
-
-  if (!val) {
-    err.textContent = 'Please paste your API key first.';
-    err.classList.add('show');
-    return;
-  }
-  if (!val.startsWith('sk-ant-')) {
-    err.textContent = 'That doesn\'t look right — Claude API keys start with sk-ant-...';
-    err.classList.add('show');
-    return;
-  }
-
-  apiKey = val;
-  localStorage.setItem('dropai_key', val);
-
-  btn.textContent = 'Connecting...';
-  btn.classList.add('loading');
-
-  // Show transition
-  launchApp(false);
+function saveKey() {
+    const input = document.getElementById('keyInput').value.trim();
+    const errEl = document.getElementById('keyError');
+    if (!input.startsWith('sk-ant-')) {
+        errEl.classList.add('visible');
+        return;
+    }
+    errEl.classList.remove('visible');
+    ANTHROPIC_KEY = input;
+    document.getElementById('keyModal').classList.add('hidden');
+    const badge = document.getElementById('statusBadge');
+    badge.className = 'status-badge connected';
+    document.getElementById('statusText').textContent = 'Claude AI Active';
 }
 
-// Enter key on input
-document.addEventListener('DOMContentLoaded', () => {
-  const input = document.getElementById('loginKey');
-  if (input) input.addEventListener('keydown', e => { if (e.key === 'Enter') handleLogin(); });
-});
-
-function launchApp(instant) {
-  if (instant) {
-    document.getElementById('loginScreen').style.display = 'none';
-    const app = document.getElementById('appShell');
-    app.style.display = 'flex';
-    setTimeout(() => app.classList.add('visible'), 30);
-    updateKeyPreview();
-    return;
-  }
-
-  // Animated transition
-  const overlay = document.getElementById('transitionOverlay');
-  const logo = document.getElementById('transitionLogo');
-  const barWrap = document.getElementById('transitionBarWrap');
-  const bar = document.getElementById('transitionBar');
-  const msg = document.getElementById('transitionMsg');
-  const loginScreen = document.getElementById('loginScreen');
-  const app = document.getElementById('appShell');
-
-  // Step 1: fade out login
-  loginScreen.classList.add('exit');
-
-  setTimeout(() => {
-    loginScreen.style.display = 'none';
-    overlay.classList.add('active');
-
-    // Step 2: animate logo in
-    setTimeout(() => {
-      logo.classList.add('show');
-      barWrap.classList.add('show');
-      msg.classList.add('show');
-    }, 80);
-
-    // Step 3: fill progress bar
-    setTimeout(() => {
-      bar.classList.add('fill');
-    }, 200);
-
-    // Step 4: transition messages
-    const messages = ['Connecting to Claude AI...', 'Loading your tools...', 'Almost there...'];
-    let mi = 0;
-    const msgInterval = setInterval(() => {
-      mi++;
-      if (mi < messages.length) msg.textContent = messages[mi];
-    }, 350);
-
-    // Step 5: reveal app
-    setTimeout(() => {
-      clearInterval(msgInterval);
-      overlay.classList.remove('active');
-      app.style.display = 'flex';
-      updateKeyPreview();
-      setTimeout(() => app.classList.add('visible'), 30);
-    }, 1100);
-
-  }, 600);
+function resetKey() {
+    ANTHROPIC_KEY = null;
+    document.getElementById('keyInput').value = '';
+    document.getElementById('keyModal').classList.remove('hidden');
+    const badge = document.getElementById('statusBadge');
+    badge.className = 'status-badge';
+    document.getElementById('statusText').textContent = 'No API Key';
 }
 
-function updateKeyPreview() {
-  const el = document.getElementById('keyPreview');
-  if (el && apiKey) el.textContent = apiKey.slice(0, 18) + '...';
+// ── Tab switching ─────────────────────────────────
+function switchTab(tab, btn) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('panel-' + tab).classList.add('active');
+    btn.classList.add('active');
 }
 
-function logout() {
-  if (!confirm('Disconnect your API key?')) return;
-  apiKey = '';
-  localStorage.removeItem('dropai_key');
-  location.reload();
+// ── Claude API call ───────────────────────────────
+async function callClaude(prompt) {
+    if (!ANTHROPIC_KEY) {
+        document.getElementById('keyModal').classList.remove('hidden');
+        throw new Error('Please connect your API key first.');
+    }
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': ANTHROPIC_KEY,
+            'anthropic-version': '2023-06-01',
+            'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({
+            model: 'claude-opus-4-5',
+            max_tokens: 1500,
+            messages: [{ role: 'user', content: prompt }]
+        })
+    });
+    if (res.status === 401) throw new Error('Invalid API key. Click the badge top-right to re-enter it.');
+    if (res.status === 429) throw new Error('Rate limit hit — wait a moment and try again.');
+    if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err?.error?.message || 'API error — please try again.');
+    }
+    const data = await res.json();
+    return data.content[0].text;
 }
 
-// ── Navigation ────────────────────────
-const titles = {
-  home: ['Dashboard', 'Welcome back — ready to build?'],
-  research: ['Product Research', 'Find trending dropship products with profit estimates'],
-  listings: ['Listing Writer', 'Generate complete Shopify product listings instantly'],
-  support: ['Customer Support', 'AI-drafted replies for any customer message'],
-  guide: ['Start Guide', 'Step-by-step roadmap to your first $1,000'],
+// ── UI helpers ────────────────────────────────────
+function setLoading(ids, on) {
+    document.getElementById(ids.error).classList.remove('visible');
+    document.getElementById(ids.btn).disabled = on;
+    const r = document.getElementById(ids.result);
+    if (on) {
+        r.className = 'result-box loading visible';
+        r.innerHTML = '<div class="spinner"></div> Claude is thinking...';
+    }
+}
+
+function showResult(ids, text) {
+    const r = document.getElementById(ids.result);
+    r.className = 'result-box visible';
+    r.innerHTML = `
+        <div class="result-header">
+            <span class="result-label">✨ AI Result</span>
+            <button class="btn-copy" onclick="copyText(this)">📋 Copy</button>
+        </div>
+        <div style="white-space:pre-wrap;line-height:1.75;">${escHtml(text)}</div>
+    `;
+    r.querySelector('.btn-copy')._text = text;
+}
+
+function showError(ids, msg) {
+    document.getElementById(ids.result).classList.remove('visible', 'loading');
+    const e = document.getElementById(ids.error);
+    e.textContent = '⚠️ ' + msg;
+    e.classList.add('visible');
+}
+
+function escHtml(t) {
+    return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function copyText(btn) {
+    navigator.clipboard.writeText(btn._text || '').then(() => {
+        btn.textContent = '✅ Copied!';
+        setTimeout(() => btn.textContent = '📋 Copy', 2200);
+    });
+}
+
+// ── Prompts ───────────────────────────────────────
+const PROMPTS = {
+    research: niche => `You are a dropshipping expert. A user wants product ideas for this niche: "${niche}".
+
+Give exactly 4 winning product ideas. For each include:
+- 🛍️ Product Name
+- ✅ Why it works for dropshipping (1–2 sentences)
+- 📦 AliExpress sourcing tip (search terms + what to look for)
+- 💰 Estimated buy price / sell price / profit margin %
+- 🎥 TikTok or Instagram content angle
+
+Separate each product clearly. Be specific and practical.`,
+
+    listing: (product, details) => `Write a complete Shopify product listing for: "${product}".
+${details ? `Extra details: ${details}` : ''}
+
+Use this exact structure:
+
+**TITLE:** (SEO-optimized, under 70 characters)
+
+**META DESCRIPTION:** (under 160 characters, for Google)
+
+**PRODUCT DESCRIPTION:**
+(3–4 engaging paragraphs, benefit-focused, conversion-optimized)
+
+**KEY FEATURES:**
+• Feature 1
+• Feature 2
+• Feature 3
+• Feature 4
+• Feature 5
+
+**SEO TAGS:** (5 keywords, comma-separated)
+
+Make it persuasive, professional, ready to paste into Shopify.`,
+
+    support: msg => `You are a professional customer support agent for a Shopify dropshipping store.
+
+A customer sent:
+"${msg}"
+
+Write a professional, warm, empathetic reply. Rules:
+- Under 150 words
+- Address their concern directly
+- Be solution-focused, not defensive
+- End positively
+- Sign off as: "Warm regards, The Support Team"
+
+Return only the reply — nothing else.`
 };
 
-document.querySelectorAll('.nav-item').forEach(item => {
-  item.addEventListener('click', () => switchTab(item.dataset.tab));
-});
-
-function switchTab(tab) {
-  document.querySelectorAll('.nav-item').forEach(i => i.classList.toggle('active', i.dataset.tab === tab));
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tab-' + tab));
-  const [t, s] = titles[tab] || ['Dashboard', ''];
-  document.getElementById('topbarTitle').textContent = t;
-  document.getElementById('topbarSub').textContent = s;
-}
-
-// ── Claude API ────────────────────────
-async function callClaude(prompt, systemPrompt) {
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 1500,
-      system: systemPrompt,
-      messages: [{ role: 'user', content: prompt }],
-    })
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err?.error?.message || `API error ${res.status}`);
-  }
-  const data = await res.json();
-  return data.content.map(b => b.text || '').join('');
-}
-
-function setLoading(btnId, loading, original) {
-  const btn = document.getElementById(btnId);
-  if (loading) { btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Thinking...'; }
-  else { btn.disabled = false; btn.innerHTML = original; }
-}
-
-function showError(id, msg) { const el = document.getElementById(id); el.textContent = '⚠️ ' + msg; el.classList.add('visible'); }
-function clearError(id) { const el = document.getElementById(id); el.textContent = ''; el.classList.remove('visible'); }
-
-// ── Product Research ──────────────────
+// ── Tool runners ──────────────────────────────────
 async function runResearch() {
-  clearError('researchError');
-  const niche = document.getElementById('researchNiche').value.trim();
-  const platform = document.getElementById('researchPlatform').value;
-  const context = document.getElementById('researchContext').value.trim();
-  if (!niche) { showError('researchError', 'Please enter a niche or audience.'); return; }
-
-  setLoading('researchBtn', true, '🔍 Find Winning Products');
-
-  const system = `You are an expert dropshipping product researcher. You find winning products that sell well organically on social media.
-You respond ONLY with valid JSON — an array of exactly 4 product objects with these fields:
-- name, category, supplierCost, sellPrice, profitMargin, estimatedProfit, hook, contentAngle, tags (array of 3 strings), supplierTip`;
-
-  const prompt = `Find 4 winning dropshipping products for this niche: "${niche}"
-Platform: ${platform}
-${context ? 'Requirements: ' + context : ''}
-Products should be visual, solve a problem, have strong organic potential and 60%+ margins.`;
-
-  try {
-    const raw = await callClaude(prompt, system);
-    const products = JSON.parse(raw.replace(/```json|```/g, '').trim());
-    renderProducts(products);
-  } catch (e) { showError('researchError', e.message); }
-
-  setLoading('researchBtn', false, '🔍 Find Winning Products');
+    const niche = document.getElementById('research-input').value.trim();
+    if (!niche) return alert('Please describe a niche or product type.');
+    if (niche.length > 300) return alert('Please keep it under 300 characters.');
+    const ids = { result:'research-result', error:'research-error', btn:'research-btn' };
+    setLoading(ids, true);
+    try {
+        showResult(ids, await callClaude(PROMPTS.research(niche)));
+    } catch(e) {
+        showError(ids, e.message);
+    } finally {
+        document.getElementById(ids.btn).disabled = false;
+    }
 }
 
-function renderProducts(products) {
-  document.getElementById('productResults').innerHTML = `<div class="product-grid">${products.map(p => `
-    <div class="product-card">
-      <div class="product-meta">${p.tags.map(t => `<span class="tag tag-purple">${t}</span>`).join('')}</div>
-      <div class="product-name">${p.name}</div>
-      <div class="product-desc">${p.hook}</div>
-      <div style="display:flex;gap:16px;margin-bottom:12px;">
-        <div><div class="product-profit">${p.estimatedProfit}</div><div class="product-profit-label">profit/sale</div></div>
-        <div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:16px">${p.profitMargin}</div><div class="product-profit-label">margin</div></div>
-        <div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:16px">${p.sellPrice}</div><div class="product-profit-label">sell price</div></div>
-      </div>
-      <div style="background:var(--bg);border-radius:8px;padding:10px;font-size:12px;color:var(--muted2);margin-bottom:8px;line-height:1.5"><strong style="color:#43e8a0">📱 Content angle:</strong> ${p.contentAngle}</div>
-      <div style="font-size:12px;color:var(--muted2)"><strong style="color:var(--muted)">Source:</strong> ${p.supplierTip}</div>
-    </div>`).join('')}</div>`;
-}
-
-// ── Listing Writer ────────────────────
 async function runListing() {
-  clearError('listingError');
-  const product = document.getElementById('listingProduct').value.trim();
-  if (!product) { showError('listingError', 'Please enter a product name.'); return; }
-
-  setLoading('listingBtn', true, '✍️ Generate Full Listing');
-
-  const system = `You are an expert Shopify copywriter. Write high-converting, SEO-optimized product listings.`;
-  const prompt = `Write a complete Shopify listing for: ${product}
-Audience: ${document.getElementById('listingAudience').value}
-Features: ${document.getElementById('listingFeatures').value}
-Price: ${document.getElementById('listingPrice').value}
-Brand: ${document.getElementById('listingBrand').value}
-
-Include: PRODUCT TITLE, SHORT DESCRIPTION, MAIN DESCRIPTION, KEY FEATURES (6 bullets), WHO IT'S FOR (3 bullets), SEO META TITLE, SEO META DESCRIPTION, TAGS (10 tags)`;
-
-  try {
-    const result = await callClaude(prompt, system);
-    document.getElementById('listingContent').textContent = result;
-    document.getElementById('listingResult').classList.add('visible');
-  } catch(e) { showError('listingError', e.message); }
-
-  setLoading('listingBtn', false, '✍️ Generate Full Listing');
+    const product = document.getElementById('listing-name').value.trim();
+    const details = document.getElementById('listing-details').value.trim();
+    if (!product) return alert('Please enter a product name.');
+    if (product.length > 200) return alert('Product name too long.');
+    const ids = { result:'listing-result', error:'listing-error', btn:'listing-btn' };
+    setLoading(ids, true);
+    try {
+        showResult(ids, await callClaude(PROMPTS.listing(product, details.slice(0,500))));
+    } catch(e) {
+        showError(ids, e.message);
+    } finally {
+        document.getElementById(ids.btn).disabled = false;
+    }
 }
 
-// ── Customer Support ──────────────────
 async function runSupport() {
-  clearError('supportError');
-  const message = document.getElementById('supportMessage').value.trim();
-  if (!message) { showError('supportError', 'Please paste the customer message.'); return; }
-
-  setLoading('supportBtn', true, '💬 Generate Reply');
-
-  const store = document.getElementById('supportStore').value || 'our store';
-  const type = document.getElementById('supportType').value;
-  const context = document.getElementById('supportContext').value;
-
-  const system = `You are a professional customer support specialist for a Shopify dropshipping store. Write empathetic, genuine, solution-focused replies. Never sound like a template.`;
-  const prompt = `Write a reply for this ${type}:
-Store: ${store}
-Customer message: "${message}"
-${context ? 'Context: ' + context : ''}
-150-250 words, warm and genuine, clear solution, sign off as "The ${store} Team"`;
-
-  try {
-    const result = await callClaude(prompt, system);
-    document.getElementById('supportContent').textContent = result;
-    document.getElementById('supportResult').classList.add('visible');
-  } catch(e) { showError('supportError', e.message); }
-
-  setLoading('supportBtn', false, '💬 Generate Reply');
-}
-
-// ── Copy ──────────────────────────────
-function copyResult(contentId, btn) {
-  navigator.clipboard.writeText(document.getElementById(contentId).textContent).then(() => {
-    const orig = btn.textContent;
-    btn.textContent = '✓ Copied!';
-    btn.classList.add('copied');
-    setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 2000);
-  });
+    const msg = document.getElementById('support-input').value.trim();
+    if (!msg) return alert('Please paste a customer message.');
+    if (msg.length > 1000) return alert('Message too long — keep it under 1000 characters.');
+    const ids = { result:'support-result', error:'support-error', btn:'support-btn' };
+    setLoading(ids, true);
+    try {
+        showResult(ids, await callClaude(PROMPTS.support(msg)));
+    } catch(e) {
+        showError(ids, e.message);
+    } finally {
+        document.getElementById(ids.btn).disabled = false;
+    }
 }
 </script>
+
 </body>
 </html>
