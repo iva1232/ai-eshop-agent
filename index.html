@@ -1,857 +1,1431 @@
-   <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DropAI — Shopify Business Dashboard</title>
-    <style>
-        :root {
-            --bg: #0d0d0d;
-            --card: #1a1a1a;
-            --border: #2a2a2a;
-            --accent: #7c3aed;
-            --accent2: #a855f7;
-            --green: #22c55e;
-            --text: #f1f5f9;
-            --muted: #94a3b8;
-            --red: #f87171;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DropAI — Shopify Business Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #08080f;
+  --surface:  #0f0f1a;
+  --card:     #13131e;
+  --card2:    #191926;
+  --border:   #1f1f30;
+  --border2:  #2a2a40;
+  --accent:   #6d28d9;
+  --accent-h: #7c3aed;
+  --accent2:  #a78bfa;
+  --green:    #34d399;
+  --yellow:   #fbbf24;
+  --red:      #f87171;
+  --blue:     #60a5fa;
+  --orange:   #fb923c;
+  --text:     #eef0f6;
+  --text2:    #a0a3b1;
+  --text3:    #5a5d72;
+  --sw: 232px;
+  --th: 56px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{font-size:15px;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+button{font-family:inherit;cursor:pointer;}
+input,textarea,select{font-family:inherit;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px;}
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+/* SIDEBAR */
+.sidebar{width:var(--sw);min-height:100vh;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:60;}
+.s-logo{height:var(--th);display:flex;align-items:center;gap:.6rem;padding:0 1.1rem;border-bottom:1px solid var(--border);flex-shrink:0;}
+.logo-mark{width:28px;height:28px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.logo-name{font-size:1.05rem;font-weight:800;letter-spacing:-.02em;background:linear-gradient(135deg,#c4b5fd,var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.s-nav{padding:.6rem .7rem;flex:1;display:flex;flex-direction:column;gap:2px;overflow-y:auto;}
+.s-sect{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);padding:.7rem .7rem .3rem;margin-top:.3rem;}
+.nb{display:flex;align-items:center;gap:.6rem;padding:.55rem .75rem;border-radius:8px;font-size:.875rem;font-weight:500;color:var(--text2);background:transparent;border:none;width:100%;text-align:left;transition:all .15s;position:relative;}
+.nb:hover{background:rgba(255,255,255,.04);color:var(--text);}
+.nb.active{background:rgba(109,40,217,.2);color:var(--accent2);font-weight:600;}
+.nb.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:18px;background:var(--accent2);border-radius:0 3px 3px 0;}
+.ni{font-size:1rem;flex-shrink:0;opacity:.85;}
+.nbadge{margin-left:auto;font-size:.65rem;font-weight:700;background:var(--accent);color:white;padding:2px 6px;border-radius:99px;}
+.s-bottom{padding:.7rem;border-top:1px solid var(--border);flex-shrink:0;}
+.u-row{display:flex;align-items:center;gap:.6rem;padding:.5rem .6rem;border-radius:8px;cursor:pointer;transition:background .15s;}
+.u-row:hover{background:rgba(255,255,255,.04);}
+.u-av{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#db2777);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:white;flex-shrink:0;}
+.u-info{flex:1;min-width:0;}
+.u-name{font-size:.8rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.u-plan{font-size:.68rem;color:var(--text3);}
 
-        body {
-            background: var(--bg);
-            color: var(--text);
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            min-height: 100vh;
-        }
+/* MAIN */
+.main{margin-left:var(--sw);flex:1;min-height:100vh;display:flex;flex-direction:column;}
+.topbar{height:var(--th);display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;border-bottom:1px solid var(--border);background:var(--surface);position:sticky;top:0;z-index:40;flex-shrink:0;gap:1rem;}
+.bc{font-size:.875rem;font-weight:600;color:var(--text);}
+.tb-r{display:flex;align-items:center;gap:.5rem;}
+.tbb{height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text2);font-size:.8rem;font-weight:500;cursor:pointer;transition:all .15s;padding:0 .7rem;gap:.4rem;white-space:nowrap;}
+.tbb:hover{border-color:var(--accent2);color:var(--text);}
+.tbb.pill{border-radius:99px;font-size:.75rem;font-weight:700;}
+.tbb.connected{border-color:rgba(52,211,153,.4);color:var(--green);background:rgba(52,211,153,.08);}
+.tbb.no-key{border-color:rgba(251,191,36,.4);color:var(--yellow);background:rgba(251,191,36,.08);}
+.sdot{width:6px;height:6px;border-radius:50%;background:currentColor;animation:blink 2.5s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.page{padding:1.5rem 1.75rem 3rem;flex:1;overflow-y:auto;}
+.ph{margin-bottom:1.5rem;}
+.pt{font-size:1.25rem;font-weight:800;letter-spacing:-.02em;}
+.pd{font-size:.85rem;color:var(--text2);margin-top:.3rem;line-height:1.55;}
+.view{display:none;}
+.view.active{display:block;}
 
-        /* ── HEADER ── */
-        header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 1rem 2rem;
-            border-bottom: 1px solid var(--border);
-            background: rgba(13,13,13,0.97);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            backdrop-filter: blur(12px);
-            gap: 1rem;
-        }
+/* DASHBOARD */
+.dash-grid{display:grid;grid-template-columns:1fr 280px;gap:1.25rem;}
+.dcol{display:flex;flex-direction:column;gap:1.25rem;}
+.stats-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:.85rem;margin-bottom:1.25rem;}
+.sc{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1rem 1.15rem;display:flex;flex-direction:column;gap:.4rem;}
+.sc .sl{font-size:.75rem;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.05em;}
+.sc .sv{font-size:1.5rem;font-weight:800;letter-spacing:-.03em;}
+.sc .ss{font-size:.73rem;color:var(--text3);}
+.dc{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.dch{display:flex;align-items:center;justify-content:space-between;padding:.85rem 1.15rem;border-bottom:1px solid var(--border);}
+.dct{font-size:.85rem;font-weight:700;}
+.dca{font-size:.75rem;color:var(--accent2);background:none;border:none;cursor:pointer;font-weight:600;}
+.dcb{padding:.5rem 0;}
+.act-item{display:flex;align-items:center;gap:.75rem;padding:.65rem 1.15rem;border-bottom:1px solid var(--border);transition:background .12s;}
+.act-item:last-child{border-bottom:none;}
+.act-item:hover{background:rgba(255,255,255,.02);}
+.act-ico{width:30px;height:30px;border-radius:8px;background:var(--card2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;}
+.act-body{flex:1;min-width:0;}
+.act-name{font-size:.8rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.act-time{font-size:.7rem;color:var(--text3);margin-top:1px;}
+.act-ago{font-size:.72rem;color:var(--text3);flex-shrink:0;}
+.act-empty{padding:1.5rem 1.15rem;text-align:center;color:var(--text3);font-size:.82rem;}
+.tli{display:flex;align-items:center;gap:.75rem;padding:.75rem 1.15rem;border-bottom:1px solid var(--border);cursor:pointer;transition:background .12s;}
+.tli:last-child{border-bottom:none;}
+.tli:hover{background:rgba(109,40,217,.08);}
+.tico{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+.tico.pu{background:rgba(109,40,217,.2);}
+.tico.bl{background:rgba(96,165,250,.15);}
+.tico.gr{background:rgba(52,211,153,.15);}
+.tico.or{background:rgba(251,146,60,.15);}
+.tmeta{flex:1;min-width:0;}
+.tname{font-size:.82rem;font-weight:700;}
+.tdesc{font-size:.72rem;color:var(--text3);margin-top:1px;line-height:1.4;}
+.tarr{font-size:.8rem;color:var(--text3);}
 
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--accent), var(--accent2));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+/* TOOL VIEWS */
+.tl{display:grid;grid-template-columns:1fr 300px;gap:1.25rem;align-items:start;}
+.fc{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.35rem 1.5rem;}
+.fc h2{font-size:1rem;font-weight:700;margin-bottom:.3rem;}
+.fc .sub{font-size:.82rem;color:var(--text2);margin-bottom:1.25rem;line-height:1.55;}
+.fl{display:block;font-size:.78rem;font-weight:700;color:var(--text2);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.05em;}
+.fh{font-size:.72rem;color:var(--text3);margin-bottom:.75rem;}
+textarea,input[type=text],input[type=password],select{width:100%;background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:.75rem .95rem;color:var(--text);font-size:.88rem;transition:border-color .15s,box-shadow .15s;display:block;outline:none;}
+textarea{resize:vertical;min-height:110px;line-height:1.55;}
+select{min-height:auto;cursor:pointer;}
+textarea:focus,input:focus,select:focus{border-color:var(--accent-h);box-shadow:0 0 0 3px rgba(109,40,217,.15);}
+.fg{margin-bottom:.85rem;}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.45rem;padding:.7rem 1.35rem;border-radius:8px;font-size:.875rem;font-weight:700;border:none;cursor:pointer;transition:all .15s;font-family:inherit;white-space:nowrap;line-height:1;}
+.btn-p{background:linear-gradient(135deg,var(--accent),var(--accent-h));color:white;box-shadow:0 2px 8px rgba(109,40,217,.3);}
+.btn-p:hover:not(:disabled){opacity:.9;transform:translateY(-1px);box-shadow:0 4px 14px rgba(109,40,217,.4);}
+.btn-p:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none;}
+.btn-s{background:var(--card2);border:1px solid var(--border2);color:var(--text2);}
+.btn-s:hover{border-color:var(--accent2);color:var(--text);}
+.btn-g{background:none;border:1px solid var(--border);color:var(--text2);}
+.btn-g:hover{border-color:var(--border2);color:var(--text);background:rgba(255,255,255,.03);}
+.btn-sm{padding:.45rem .85rem;font-size:.78rem;}
+.btn-xs{padding:.3rem .65rem;font-size:.72rem;border-radius:6px;}
+.btn-full{width:100%;}
+.row-btns{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;}
 
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
+/* RESULT */
+.rb{background:var(--card2);border:1px solid var(--border);border-radius:8px;overflow:hidden;display:none;margin-top:1.1rem;}
+.rb.visible{display:block;}
+.rbt{display:flex;align-items:center;justify-content:space-between;padding:.6rem .85rem;border-bottom:1px solid var(--border);background:var(--card);}
+.rbl{font-size:.72rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;}
+.rba{display:flex;gap:.4rem;}
+.rc{padding:.95rem 1rem;font-size:.85rem;line-height:1.75;white-space:pre-wrap;word-break:break-word;max-height:480px;overflow-y:auto;}
+.rc.streaming::after{content:'▋';animation:blink-c .7s steps(2) infinite;color:var(--accent2);}
+@keyframes blink-c{0%,100%{opacity:1}50%{opacity:0}}
+.lb{display:none;height:3px;background:var(--border);border-radius:99px;overflow:hidden;margin-top:1rem;}
+.lb.visible{display:block;}
+.lb-inner{height:100%;width:35%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:99px;animation:ls 1.4s ease-in-out infinite;}
+@keyframes ls{0%{transform:translateX(-100%)}100%{transform:translateX(350%)}}
+.eb{display:none;background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.25);border-radius:8px;padding:.7rem .9rem;color:var(--red);font-size:.82rem;margin-top:.9rem;line-height:1.5;}
+.eb.visible{display:block;}
 
-        .btn-download {
-            padding: 0.4rem 1rem;
-            border-radius: 999px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            cursor: pointer;
-            border: 1px solid rgba(124,58,237,0.4);
-            background: rgba(124,58,237,0.12);
-            color: var(--accent2);
-            transition: all 0.2s;
-            font-family: inherit;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            text-decoration: none;
-        }
-        .btn-download:hover {
-            background: rgba(124,58,237,0.25);
-            border-color: rgba(124,58,237,0.7);
-        }
+/* INFO CARDS */
+.ic{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:1rem;}
+.ic:last-child{margin-bottom:0;}
+.ich{padding:.75rem 1rem;border-bottom:1px solid var(--border);font-size:.8rem;font-weight:700;display:flex;align-items:center;gap:.5rem;}
+.icb{padding:.85rem 1rem;}
+.ii{font-size:.78rem;color:var(--text2);line-height:1.55;margin-bottom:.5rem;}
+.ii:last-child{margin-bottom:0;}
+.ii strong{color:var(--text);font-weight:600;}
+.badge-row{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.5rem;}
+.bdg{font-size:.68rem;font-weight:700;padding:3px 8px;border-radius:99px;border:1px solid;}
+.bdg-pu{color:var(--accent2);border-color:rgba(167,139,250,.3);background:rgba(109,40,217,.12);}
+.bdg-gr{color:var(--green);border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.1);}
+.bdg-bl{color:var(--blue);border-color:rgba(96,165,250,.3);background:rgba(96,165,250,.1);}
+.bdg-or{color:var(--orange);border-color:rgba(251,146,60,.3);background:rgba(251,146,60,.1);}
+.wh-block{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:.7rem .85rem;margin-top:.6rem;}
+.wh-url{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--text3);word-break:break-all;line-height:1.5;margin-bottom:.5rem;}
+.wh-url.has{color:var(--accent2);}
 
-        .status-badge {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.4rem 1rem;
-            border-radius: 999px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            border: 1px solid rgba(234,179,8,0.3);
-            background: rgba(234,179,8,0.1);
-            color: #eab308;
-            transition: all 0.4s;
-            cursor: pointer;
-            user-select: none;
-            white-space: nowrap;
-        }
-        .status-badge.connected {
-            background: rgba(34,197,94,0.1);
-            border-color: rgba(34,197,94,0.3);
-            color: var(--green);
-        }
-        .status-badge.error {
-            background: rgba(239,68,68,0.1);
-            border-color: rgba(239,68,68,0.3);
-            color: var(--red);
-        }
-        .dot {
-            width: 8px; height: 8px;
-            border-radius: 50%;
-            background: currentColor;
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+/* SHOPIFY */
+.sh-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem;}
+.sh-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.25rem;}
+.sh-card h3{font-size:.9rem;font-weight:700;margin-bottom:.35rem;display:flex;align-items:center;gap:.5rem;}
+.sh-card p{font-size:.8rem;color:var(--text2);margin-bottom:1rem;line-height:1.5;}
+.sh-status{display:flex;align-items:center;gap:.5rem;font-size:.78rem;font-weight:600;padding:.5rem .75rem;border-radius:8px;background:var(--card2);border:1px solid var(--border);margin-bottom:.75rem;}
+.sh-status.ok{color:var(--green);border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.08);}
+.sh-status.bad{color:var(--yellow);border-color:rgba(251,191,36,.3);background:rgba(251,191,36,.08);}
 
-        /* ── KEY MODAL ── */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.85);
-            backdrop-filter: blur(6px);
-            z-index: 999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
-        }
-        .modal-overlay.hidden { display: none; }
+/* N8N */
+.n8n-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem;margin-bottom:1.25rem;}
+.n8n-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.2rem;}
+.n8n-card h3{font-size:.88rem;font-weight:700;margin-bottom:.3rem;display:flex;align-items:center;gap:.45rem;}
+.n8n-card p{font-size:.78rem;color:var(--text2);line-height:1.5;margin-bottom:.9rem;}
+.n8n-wf{display:inline-flex;align-items:center;gap:.35rem;font-size:.7rem;font-weight:700;color:var(--orange);background:rgba(251,146,60,.1);border:1px solid rgba(251,146,60,.3);border-radius:99px;padding:3px 9px;margin-bottom:.75rem;}
+pre.jp{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:.75rem;font-family:'DM Mono',monospace;font-size:.68rem;color:var(--accent2);line-height:1.6;overflow-x:auto;max-height:200px;overflow-y:auto;white-space:pre;}
 
-        .modal {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 2rem;
-            max-width: 460px;
-            width: 100%;
-        }
-        .modal h2 {
-            font-size: 1.25rem;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, #fff 40%, var(--accent2));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .modal p {
-            color: var(--muted);
-            font-size: 0.87rem;
-            line-height: 1.6;
-            margin-bottom: 1.2rem;
-        }
-        .modal p a { color: var(--accent2); text-decoration: none; }
+/* SETTINGS */
+.st-layout{display:grid;grid-template-columns:200px 1fr;gap:1.25rem;align-items:start;}
+.st-tabs{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.stab{display:flex;align-items:center;gap:.55rem;width:100%;padding:.65rem .9rem;border:none;background:none;color:var(--text2);font-size:.82rem;font-weight:500;text-align:left;border-bottom:1px solid var(--border);cursor:pointer;transition:all .12s;}
+.stab:last-child{border-bottom:none;}
+.stab:hover{background:rgba(255,255,255,.03);color:var(--text);}
+.stab.active{background:rgba(109,40,217,.15);color:var(--accent2);font-weight:700;}
+.st-panel{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.35rem 1.5rem;}
+.st-panel.hidden{display:none;}
+.st-panel h3{font-size:.95rem;font-weight:700;margin-bottom:.3rem;}
+.st-panel>.sp{font-size:.82rem;color:var(--text2);margin-bottom:1.25rem;line-height:1.55;}
+.sr{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;padding:.85rem 0;border-bottom:1px solid var(--border);}
+.sr:last-child{border-bottom:none;}
+.srm{flex:1;}
+.srn{font-size:.85rem;font-weight:600;margin-bottom:.2rem;}
+.srd{font-size:.75rem;color:var(--text3);line-height:1.5;}
+.src{flex-shrink:0;}
+.toggle{width:38px;height:20px;border-radius:99px;background:var(--border2);position:relative;cursor:pointer;transition:background .2s;flex-shrink:0;}
+.toggle.on{background:var(--accent);}
+.toggle::after{content:'';position:absolute;width:14px;height:14px;border-radius:50%;background:white;top:3px;left:3px;transition:transform .2s;}
+.toggle.on::after{transform:translateX(18px);}
 
-        .key-input-wrap {
-            display: flex;
-            gap: 0.6rem;
-        }
-        .key-input-wrap input {
-            flex: 1;
-            background: #111;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 0.8rem 1rem;
-            color: var(--text);
-            font-size: 0.9rem;
-            font-family: monospace;
-            letter-spacing: 0.05em;
-        }
-        .key-input-wrap input:focus { outline: none; border-color: var(--accent); }
+/* MODAL */
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);z-index:999;display:flex;align-items:center;justify-content:center;padding:1rem;animation:fi .15s ease;}
+.mo.hidden{display:none;}
+@keyframes fi{from{opacity:0}to{opacity:1}}
+.m{background:var(--card);border:1px solid var(--border2);border-radius:16px;padding:2rem;max-width:440px;width:100%;animation:su .2s ease;box-shadow:0 24px 80px rgba(0,0,0,.6);}
+@keyframes su{from{transform:translateY(12px);opacity:0}to{transform:translateY(0);opacity:1}}
+.m-logo{display:flex;align-items:center;gap:.5rem;margin-bottom:1.25rem;}
+.m h2{font-size:1.1rem;font-weight:800;margin-bottom:.3rem;}
+.m-sub{font-size:.82rem;color:var(--text2);line-height:1.6;margin-bottom:1.25rem;}
+.m-sub a{color:var(--accent2);border-bottom:1px solid rgba(167,139,250,.3);}
+.m-kr{display:flex;gap:.5rem;margin-bottom:.6rem;}
+.m-kr input{flex:1;font-family:'DM Mono',monospace;font-size:.82rem;letter-spacing:.04em;margin:0;}
+.m-err{font-size:.78rem;color:var(--red);display:none;margin-bottom:.5rem;}
+.m-err.visible{display:block;}
+.m-note{background:rgba(109,40,217,.07);border:1px solid rgba(109,40,217,.2);border-radius:8px;padding:.65rem .85rem;font-size:.75rem;color:var(--text2);line-height:1.55;margin-top:.8rem;}
+.m-div{display:flex;align-items:center;gap:.75rem;margin:1rem 0;font-size:.72rem;color:var(--text3);}
+.m-div::before,.m-div::after{content:'';flex:1;height:1px;background:var(--border);}
+.step-list{display:flex;flex-direction:column;gap:.55rem;}
+.si{display:flex;gap:.6rem;align-items:flex-start;font-size:.78rem;color:var(--text2);line-height:1.5;}
+.sn{width:18px;height:18px;border-radius:50%;background:rgba(109,40,217,.2);color:var(--accent2);font-size:.65rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
 
-        .modal-note {
-            margin-top: 1rem;
-            font-size: 0.78rem;
-            color: var(--muted);
-            background: rgba(124,58,237,0.07);
-            border: 1px solid rgba(124,58,237,0.18);
-            border-radius: 8px;
-            padding: 0.7rem 0.9rem;
-            line-height: 1.55;
-        }
+/* TOAST */
+#toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--card2);border:1px solid var(--border2);border-radius:8px;padding:.65rem 1rem;font-size:.82rem;font-weight:600;z-index:9999;display:flex;align-items:center;gap:.5rem;box-shadow:0 8px 32px rgba(0,0,0,.4);transition:opacity .3s,transform .3s;opacity:0;transform:translateY(8px);pointer-events:none;}
+#toast.show{opacity:1;transform:translateY(0);}
 
-        .modal-error {
-            margin-top: 0.75rem;
-            font-size: 0.82rem;
-            color: var(--red);
-            display: none;
-        }
-        .modal-error.visible { display: block; }
-
-        /* ── HERO ── */
-        .hero {
-            text-align: center;
-            padding: 3.5rem 2rem 1.5rem;
-        }
-        .hero h1 {
-            font-size: 2.4rem;
-            font-weight: 800;
-            margin-bottom: 0.8rem;
-            background: linear-gradient(135deg, #fff 40%, var(--accent2));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .hero p {
-            color: var(--muted);
-            font-size: 1.05rem;
-            max-width: 580px;
-            margin: 0 auto 2rem;
-            line-height: 1.6;
-        }
-
-        .stats {
-            display: flex;
-            justify-content: center;
-            gap: 3rem;
-            padding: 1.5rem 2rem;
-            max-width: 520px;
-            margin: 0 auto;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-        }
-        .stat { text-align: center; }
-        .stat .value { font-size: 1.4rem; font-weight: 800; color: var(--accent2); }
-        .stat .label { font-size: 0.78rem; color: var(--muted); margin-top: 0.2rem; }
-
-        /* ── MAIN ── */
-        .main {
-            max-width: 860px;
-            margin: 0 auto;
-            padding: 2rem 1.5rem 5rem;
-        }
-
-        /* ── TABS ── */
-        .tabs {
-            display: flex;
-            gap: 0.4rem;
-            margin-bottom: 1.5rem;
-            background: var(--card);
-            padding: 0.4rem;
-            border-radius: 12px;
-            border: 1px solid var(--border);
-        }
-        .tab {
-            flex: 1;
-            padding: 0.7rem 1rem;
-            border: none;
-            background: transparent;
-            color: var(--muted);
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.88rem;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-        .tab:hover { color: var(--text); background: rgba(255,255,255,0.05); }
-        .tab.active {
-            background: linear-gradient(135deg, var(--accent), var(--accent2));
-            color: white;
-        }
-
-        .panel { display: none; }
-        .panel.active { display: block; }
-
-        /* ── TOOL CARD ── */
-        .tool-card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 1.5rem;
-        }
-        .tool-card h2 { font-size: 1.15rem; font-weight: 700; margin-bottom: 0.4rem; }
-        .tool-card > p {
-            color: var(--muted);
-            font-size: 0.88rem;
-            margin-bottom: 1.2rem;
-            line-height: 1.6;
-        }
-
-        textarea, input[type="text"], input[type="password"] {
-            width: 100%;
-            background: #111;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 0.85rem 1rem;
-            color: var(--text);
-            font-size: 0.93rem;
-            font-family: inherit;
-            transition: border-color 0.2s;
-            margin-bottom: 1rem;
-            display: block;
-        }
-        textarea { resize: vertical; min-height: 100px; }
-        textarea:focus, input:focus { outline: none; border-color: var(--accent); }
-
-        /* ── BUTTONS ── */
-        .btn {
-            padding: 0.8rem 1.8rem;
-            border: none;
-            border-radius: 8px;
-            font-size: 0.92rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, var(--accent), var(--accent2));
-            color: white;
-        }
-        .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
-        .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
-
-        /* ── RESULTS ── */
-        .result-box {
-            margin-top: 1.2rem;
-            background: #111;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 1.2rem;
-            font-size: 0.9rem;
-            line-height: 1.75;
-            display: none;
-        }
-        .result-box.visible { display: block; }
-        .result-box.loading {
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-            color: var(--muted);
-        }
-
-        .spinner {
-            width: 20px; height: 20px; min-width: 20px;
-            border: 2px solid var(--border);
-            border-top-color: var(--accent2);
-            border-radius: 50%;
-            animation: spin 0.75s linear infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        .result-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 0.9rem;
-            padding-bottom: 0.7rem;
-            border-bottom: 1px solid var(--border);
-        }
-        .result-label {
-            font-size: 0.75rem;
-            color: var(--muted);
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-        }
-        .btn-copy {
-            padding: 0.28rem 0.75rem;
-            font-size: 0.78rem;
-            background: rgba(124,58,237,0.15);
-            border: 1px solid rgba(124,58,237,0.35);
-            border-radius: 6px;
-            color: var(--accent2);
-            cursor: pointer;
-            font-weight: 600;
-            transition: background 0.2s;
-            font-family: inherit;
-        }
-        .btn-copy:hover { background: rgba(124,58,237,0.28); }
-
-        .error-box {
-            background: rgba(239,68,68,0.08);
-            border: 1px solid rgba(239,68,68,0.25);
-            border-radius: 8px;
-            padding: 0.75rem 1rem;
-            color: var(--red);
-            font-size: 0.88rem;
-            margin-top: 1rem;
-            display: none;
-        }
-        .error-box.visible { display: block; }
-
-        /* ── PRIVACY NOTICE ── */
-        .privacy-notice {
-            background: rgba(124,58,237,0.05);
-            border: 1px solid rgba(124,58,237,0.18);
-            border-radius: 8px;
-            padding: 0.75rem 1rem;
-            font-size: 0.8rem;
-            color: var(--muted);
-            margin-top: 1.2rem;
-            line-height: 1.5;
-        }
-        .privacy-notice a { color: var(--accent2); text-decoration: none; }
-
-        /* ── ROADMAP ── */
-        .section-title {
-            font-size: 1.15rem;
-            font-weight: 700;
-            margin-bottom: 1.2rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        .roadmap-card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 1.5rem;
-            margin-top: 2.5rem;
-        }
-        .step {
-            display: flex;
-            gap: 1rem;
-            padding: 0.85rem 0;
-            border-bottom: 1px solid var(--border);
-            align-items: flex-start;
-        }
-        .step:last-of-type { border-bottom: none; }
-        .step-num {
-            width: 28px; height: 28px; min-width: 28px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent), var(--accent2));
-            display: flex; align-items: center; justify-content: center;
-            font-size: 0.72rem; font-weight: 800;
-            margin-top: 0.1rem;
-        }
-        .step-text { font-size: 0.88rem; line-height: 1.65; color: var(--muted); }
-        .step-text strong { color: var(--text); }
-
-        /* ── TIMELINE ── */
-        .timeline {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-            gap: 0.9rem;
-            margin-top: 1.5rem;
-        }
-        .timeline-item {
-            background: #111;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 1rem;
-            text-align: center;
-        }
-        .timeline-item .month { font-size: 0.75rem; color: var(--muted); margin-bottom: 0.3rem; }
-        .timeline-item .income { font-size: 1.1rem; font-weight: 800; color: var(--accent2); }
-        .timeline-item .desc { font-size: 0.73rem; color: var(--muted); margin-top: 0.3rem; }
-
-        /* ── PRIVACY FULL ── */
-        .privacy-full {
-            margin-top: 2rem;
-            padding: 1.5rem;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            font-size: 0.83rem;
-            color: var(--muted);
-            line-height: 1.85;
-        }
-        .privacy-full h3 { color: var(--text); margin-bottom: 0.9rem; font-size: 1rem; }
-        .privacy-full strong { color: var(--text); }
-        .privacy-full a { color: var(--accent2); text-decoration: none; }
-
-        footer {
-            text-align: center;
-            padding: 2rem;
-            border-top: 1px solid var(--border);
-            color: var(--muted);
-            font-size: 0.78rem;
-        }
-        footer a { color: var(--accent2); text-decoration: none; }
-
-        @media (max-width: 600px) {
-            .hero h1 { font-size: 1.75rem; }
-            .tabs { flex-direction: column; }
-            .stats { gap: 1.5rem; }
-            header { padding: 1rem; }
-            .key-input-wrap { flex-direction: column; }
-            .btn-download span { display: none; }
-        }
-    </style>
+/* RESPONSIVE */
+@media(max-width:960px){.dash-grid,.tl,.sh-grid,.n8n-grid,.st-layout{grid-template-columns:1fr;}}
+@media(max-width:720px){:root{--sw:0px;}.sidebar{transform:translateX(-100%);}.stats-bar{grid-template-columns:1fr 1fr;}.main{margin-left:0;}}
+</style>
 </head>
 <body>
 
-<!-- ══════════════════════════════════════
-     API KEY MODAL
-══════════════════════════════════════ -->
-<div class="modal-overlay" id="keyModal">
-    <div class="modal">
-        <h2>🔑 Enter Your Anthropic API Key</h2>
-        <p>
-            Your key is used <strong>only in this browser session</strong> to call Claude AI directly.
-            It is <strong>never saved, never sent anywhere else</strong>, and disappears the moment you close this tab.
-            Get a free key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>
-        </p>
-        <div class="key-input-wrap">
-            <input type="password" id="keyInput" placeholder="sk-ant-api03-..." autocomplete="off" />
-            <button class="btn btn-primary" onclick="saveKey()">Connect</button>
-        </div>
-        <p class="modal-error" id="keyError">⚠️ That doesn't look right — key should start with <strong>sk-ant-</strong></p>
-        <div class="modal-note">
-            🔒 No backend server here. Your key stays in your browser's memory only and is cleared on refresh. Only use this on your own personal device.
-        </div>
+<!-- MODAL -->
+<div class="mo" id="keyModal">
+  <div class="m">
+    <div class="m-logo"><div class="logo-mark">✦</div><span class="logo-name">DropAI</span></div>
+    <h2>Connect Your API Key</h2>
+    <p class="m-sub">Enter your free Anthropic API key to unlock all AI tools. Your key stays only in your browser — it is never stored or shared.<br><br>No key yet? Get one free at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> — takes 2 minutes.</p>
+    <div class="m-kr">
+      <input type="password" id="keyInput" placeholder="sk-ant-api03-..." autocomplete="off" />
+      <button class="btn btn-p" onclick="saveKey()">Connect</button>
     </div>
+    <div class="m-err" id="keyError">⚠ Key should start with <strong>sk-ant-</strong></div>
+    <div class="m-div">How it works</div>
+    <div class="step-list">
+      <div class="si"><div class="sn">1</div>Your key lives only in this browser tab — never saved anywhere</div>
+      <div class="si"><div class="sn">2</div>It is cleared automatically when you close or refresh the page</div>
+      <div class="si"><div class="sn">3</div>Requests go directly from your browser to Anthropic — no middlemen</div>
+    </div>
+    <div class="m-note">🔒 No servers. No accounts. No tracking. Just AI tools that work.</div>
+  </div>
 </div>
 
-<!-- ══════════════════════════════════════
-     HEADER
-══════════════════════════════════════ -->
-<header>
-    <div class="logo">DropAI</div>
-    <div class="header-right">
-        <button class="btn-download" onclick="downloadFile()" title="Download this file">
-            ⬇️ <span>Download</span>
-        </button>
-        <div class="status-badge" id="statusBadge" onclick="resetKey()" title="Click to change API key">
-            <div class="dot"></div>
-            <span id="statusText">No API Key</span>
-        </div>
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="s-logo"><div class="logo-mark">✦</div><span class="logo-name">DropAI</span></div>
+  <div class="s-nav">
+    <div class="s-sect">Overview</div>
+    <button class="nb active" data-view="dashboard"><span class="ni">⊞</span> Dashboard</button>
+    <div class="s-sect">AI Tools</div>
+    <button class="nb" data-view="research"><span class="ni">🔍</span> Product Research</button>
+    <button class="nb" data-view="listing"><span class="ni">📝</span> Listing Generator</button>
+    <button class="nb" data-view="adcopy"><span class="ni">📣</span> Ad Copy Generator</button>
+    <button class="nb" data-view="email"><span class="ni">✉</span> Email Marketing</button>
+    <button class="nb" data-view="pricing"><span class="ni">💰</span> Pricing Strategy</button>
+    <button class="nb" data-view="support"><span class="ni">💬</span> Customer Support</button>
+    <div class="s-sect">Integrations</div>
+    <button class="nb" data-view="shopify"><span class="ni">🛍</span> Shopify Connect</button>
+    <button class="nb" data-view="n8n"><span class="ni">⚡</span> n8n Automation <span class="nbadge">New</span></button>
+    <div class="s-sect">Account</div>
+    <button class="nb" data-view="settings"><span class="ni">⚙</span> Settings</button>
+  </div>
+  <div class="s-bottom">
+    <div class="u-row" onclick="resetKey()">
+      <div class="u-av">D</div>
+      <div class="u-info"><div class="u-name">DropAI User</div><div class="u-plan">Free Plan</div></div>
     </div>
-</header>
+  </div>
+</nav>
 
-<!-- ══════════════════════════════════════
-     HERO
-══════════════════════════════════════ -->
-<div class="hero">
-    <h1>Shopify Business Assistant</h1>
-    <p>Your <strong>AI-powered co-pilot</strong> for finding products, writing listings, and handling customers — all in seconds.</p>
-    <div class="stats">
-        <div class="stat"><div class="value">$0</div><div class="label">Startup Cost</div></div>
-        <div class="stat"><div class="value">∞</div><div class="label">Products to Find</div></div>
-        <div class="stat"><div class="value">3</div><div class="label">AI Tools Active</div></div>
-    </div>
-</div>
-
-<!-- ══════════════════════════════════════
-     MAIN CONTENT
-══════════════════════════════════════ -->
+<!-- MAIN -->
 <div class="main">
-
-    <!-- TABS -->
-    <div class="tabs">
-        <button class="tab active" onclick="switchTab('research', this)">🔍 Product Research</button>
-        <button class="tab" onclick="switchTab('listing', this)">📝 Listing Writer</button>
-        <button class="tab" onclick="switchTab('support', this)">💬 Customer Support</button>
+  <header class="topbar">
+    <div class="bc" id="breadcrumb">Dashboard</div>
+    <div class="tb-r">
+      <button class="tbb" onclick="downloadFile()">⬇ Download</button>
+      <button class="tbb pill no-key" id="statusBadge" onclick="resetKey()">
+        <span class="sdot"></span><span id="statusText">No API Key</span>
+      </button>
     </div>
+  </header>
 
-    <!-- PANEL: Research -->
-    <div id="panel-research" class="panel active">
-        <div class="tool-card">
-            <h2>🔍 Product Research Engine</h2>
-            <p>Describe a niche, audience, or interest — get 4 winning product ideas with AliExpress sourcing tips, profit margins, and TikTok/Instagram content angles.</p>
-            <textarea id="research-input" placeholder="e.g. fitness accessories for home workouts, pet gadgets, kitchen tools for college students..."></textarea>
-            <button class="btn btn-primary" id="research-btn" onclick="runResearch()">🔍 Find Products</button>
-            <div class="result-box" id="research-result"></div>
-            <div class="error-box" id="research-error"></div>
+  <div class="page" id="mainPage">
+
+    <!-- ══ DASHBOARD ══ -->
+    <div class="view active" id="view-dashboard">
+      <div class="ph"><div class="pt">Business Overview</div><div class="pd">Welcome to DropAI — your complete Shopify automation toolkit powered by Claude AI.</div></div>
+      <div class="stats-bar">
+        <div class="sc"><div class="sl">AI Requests</div><div class="sv" id="statRequests">0</div><div class="ss">This session</div></div>
+        <div class="sc"><div class="sl">Listings Made</div><div class="sv" id="statListings">0</div><div class="ss">Products generated</div></div>
+        <div class="sc"><div class="sl">Ads Written</div><div class="sv" id="statAds">0</div><div class="ss">Ad copies created</div></div>
+      </div>
+      <div class="dash-grid">
+        <div class="dcol">
+          <div class="dc">
+            <div class="dch"><span class="dct">Recent Activity</span><button class="dca" onclick="clearActivity()">Clear all</button></div>
+            <div class="dcb" id="activityList"><div class="act-empty">No activity yet. Use any AI tool to get started.</div></div>
+          </div>
         </div>
-    </div>
-
-    <!-- PANEL: Listing -->
-    <div id="panel-listing" class="panel">
-        <div class="tool-card">
-            <h2>📝 Shopify Listing Generator</h2>
-            <p>Enter a product name and optional details — get a full, conversion-optimized Shopify listing ready to copy-paste into your store.</p>
-            <input type="text" id="listing-name" placeholder="Product name (e.g. Magnetic Car Phone Mount)" />
-            <textarea id="listing-details" placeholder="Optional: color options, key features, target audience, price range..."></textarea>
-            <button class="btn btn-primary" id="listing-btn" onclick="runListing()">📝 Generate Listing</button>
-            <div class="result-box" id="listing-result"></div>
-            <div class="error-box" id="listing-error"></div>
+        <div class="dcol">
+          <div class="dc">
+            <div class="dch"><span class="dct">AI Tools</span></div>
+            <div class="dcb">
+              <div class="tli" onclick="gotoView('research')"><div class="tico pu">🔍</div><div class="tmeta"><div class="tname">Product Research</div><div class="tdesc">Find winning products instantly</div></div><span class="tarr">›</span></div>
+              <div class="tli" onclick="gotoView('listing')"><div class="tico bl">📝</div><div class="tmeta"><div class="tname">Listing Generator</div><div class="tdesc">Write complete Shopify product pages</div></div><span class="tarr">›</span></div>
+              <div class="tli" onclick="gotoView('adcopy')"><div class="tico or">📣</div><div class="tmeta"><div class="tname">Ad Copy Generator</div><div class="tdesc">TikTok, Instagram &amp; Facebook ads</div></div><span class="tarr">›</span></div>
+              <div class="tli" onclick="gotoView('email')"><div class="tico gr">✉</div><div class="tmeta"><div class="tname">Email Marketing</div><div class="tdesc">Cart recovery, welcome &amp; promo emails</div></div><span class="tarr">›</span></div>
+              <div class="tli" onclick="gotoView('pricing')"><div class="tico pu">💰</div><div class="tmeta"><div class="tname">Pricing Strategy</div><div class="tdesc">Optimal pricing with competitor analysis</div></div><span class="tarr">›</span></div>
+              <div class="tli" onclick="gotoView('support')"><div class="tico gr">💬</div><div class="tmeta"><div class="tname">Customer Support</div><div class="tdesc">Draft professional replies in seconds</div></div><span class="tarr">›</span></div>
+            </div>
+          </div>
+          <div class="dc">
+            <div class="dch"><span class="dct">Integrations</span></div>
+            <div class="dcb">
+              <div class="tli" onclick="gotoView('shopify')"><div class="tico or">🛍</div><div class="tmeta"><div class="tname">Shopify Connect</div><div class="tdesc">Push products directly to your store</div></div><span class="tarr">›</span></div>
+              <div class="tli" onclick="gotoView('n8n')"><div class="tico pu">⚡</div><div class="tmeta"><div class="tname">n8n Automation</div><div class="tdesc">Connect webhooks and automate workflows</div></div><span class="tarr">›</span></div>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
 
-    <!-- PANEL: Support -->
-    <div id="panel-support" class="panel">
-        <div class="tool-card">
-            <h2>💬 Customer Support AI</h2>
-            <p>Paste any customer message and get a professional, empathetic reply drafted in seconds — ready to send.</p>
-            <textarea id="support-input" placeholder="Paste the customer message here..." style="min-height:130px;"></textarea>
-            <button class="btn btn-primary" id="support-btn" onclick="runSupport()">💬 Draft Reply</button>
-            <div class="result-box" id="support-result"></div>
-            <div class="error-box" id="support-error"></div>
+    <!-- ══ PRODUCT RESEARCH ══ -->
+    <div class="view" id="view-research">
+      <div class="ph"><div class="pt">🔍 Product Research</div><div class="pd">Describe a niche or audience to get winning product ideas with sourcing tips, profit margins, and content angles.</div></div>
+      <div class="tl">
+        <div>
+          <div class="fc">
+            <div class="fg">
+              <label class="fl">What niche are you targeting?</label>
+              <div class="fh">e.g. "home gym accessories for beginners", "eco-friendly kitchen tools", "pet gadgets for dog owners"</div>
+              <textarea id="research-input" placeholder="Describe your niche or target audience..."></textarea>
+            </div>
+            <div class="row-btns">
+              <button class="btn btn-p" id="research-btn" onclick="runResearch()">🔍 Find Products</button>
+              <button class="btn btn-g btn-sm" onclick="quickFill('research-input','pet accessories for small dogs')">🐾 Pet</button>
+              <button class="btn btn-g btn-sm" onclick="quickFill('research-input','home office gadgets for remote workers')">🏠 Home Office</button>
+              <button class="btn btn-g btn-sm" onclick="quickFill('research-input','fitness equipment for home gyms')">💪 Fitness</button>
+            </div>
+            <div class="lb" id="research-loading"><div class="lb-inner"></div></div>
+            <div class="eb" id="research-error"></div>
+            <div class="rb" id="research-result">
+              <div class="rbt"><span class="rbl">✦ AI Result</span><div class="rba">
+                <button class="btn btn-xs btn-g" onclick="copyResult('research')">📋 Copy</button>
+                <button class="btn btn-xs btn-g" onclick="copyAsJson('research','Product Research')">{ } JSON</button>
+                <button class="btn btn-xs btn-g" onclick="sendToN8n('research','Product Research')">⚡ n8n</button>
+              </div></div>
+              <div class="rc" id="research-rc"></div>
+            </div>
+          </div>
         </div>
-    </div>
-
-    <div class="privacy-notice">
-        🔒 <strong>Your key stays only in this tab's memory.</strong> Cleared on close or refresh. No data stored, no tracking. <a href="#privacy">Privacy details ↓</a>
-    </div>
-
-    <!-- ══ ROADMAP ══ -->
-    <div class="roadmap-card">
-        <div class="section-title">🗺️ Your $0 Dropshipping Roadmap</div>
-        <div class="step"><div class="step-num">1</div><div class="step-text"><strong>Use Product Research</strong> to find 3–5 ideas. Look for products that are visual, solve a real problem, and have a "wow" factor.</div></div>
-        <div class="step"><div class="step-num">2</div><div class="step-text"><strong>Source from AliExpress or CJDropshipping.</strong> Filter by 10,000+ orders and 4.5+ rating. Aim to sell at 3–5× the supplier cost.</div></div>
-        <div class="step"><div class="step-num">3</div><div class="step-text"><strong>Create your Shopify store.</strong> Use Shopify's free trial. Pick the Dawn theme (free). Choose a simple, brandable name.</div></div>
-        <div class="step"><div class="step-num">4</div><div class="step-text"><strong>Install DSers (free)</strong> from the Shopify App Store. It connects AliExpress products and automates order fulfillment.</div></div>
-        <div class="step"><div class="step-num">5</div><div class="step-text"><strong>Use Listing Writer</strong> to generate product descriptions. Upload 5–8 product images from AliExpress.</div></div>
-        <div class="step"><div class="step-num">6</div><div class="step-text"><strong>Set up TikTok or Instagram.</strong> Post 1–3 short videos per day showing the product. Use trending sounds. No face needed.</div></div>
-        <div class="step"><div class="step-num">7</div><div class="step-text"><strong>Content formula:</strong> Hook (0–2s) → Problem → Product as solution → "Link in bio". Keep videos 15–30 seconds.</div></div>
-        <div class="step"><div class="step-num">8</div><div class="step-text"><strong>First sale in 1–3 weeks</strong> of consistent posting. Once a video hits 50K+ views, make more just like it.</div></div>
-        <div class="step"><div class="step-num">9</div><div class="step-text"><strong>Use Customer Support AI</strong> to handle all messages. Respond within 24 hours every time.</div></div>
-        <div class="step"><div class="step-num">10</div><div class="step-text"><strong>Scale what works.</strong> When a product hits $500/month, put $100 into TikTok Spark Ads on your best video.</div></div>
-
-        <div class="section-title" style="margin-top:2rem;">💰 Realistic Income Timeline</div>
-        <div class="timeline">
-            <div class="timeline-item"><div class="month">Month 1</div><div class="income">$0–$200</div><div class="desc">Setup & first sales</div></div>
-            <div class="timeline-item"><div class="month">Month 2</div><div class="income">$200–$800</div><div class="desc">Building audience</div></div>
-            <div class="timeline-item"><div class="month">Month 3</div><div class="income">$500–$2K</div><div class="desc">Viral potential</div></div>
-            <div class="timeline-item"><div class="month">Month 6+</div><div class="income">$2K–$10K+</div><div class="desc">Reinvesting in ads</div></div>
+        <div>
+          <div class="ic"><div class="ich">💡 Tips for Best Results</div><div class="icb">
+            <div class="ii"><strong>Be specific.</strong> "Yoga accessories for beginners" works better than just "fitness".</div>
+            <div class="ii"><strong>Mention your audience.</strong> e.g. "busy mums", "college students", "remote workers".</div>
+            <div class="ii"><strong>Include a price range.</strong> "Budget kitchen tools under £30" helps with margins.</div>
+          </div></div>
+          <div class="ic"><div class="ich">📦 What You'll Get</div><div class="icb">
+            <div class="badge-row">
+              <span class="bdg bdg-pu">4 Product Ideas</span>
+              <span class="bdg bdg-gr">Profit Margins</span>
+              <span class="bdg bdg-bl">AliExpress Tips</span>
+              <span class="bdg bdg-or">Content Angles</span>
+            </div>
+          </div></div>
+          <div class="ic"><div class="ich">⚡ n8n Webhook</div><div class="icb">
+            <div class="ii">Automatically send results to your n8n workflow after each research.</div>
+            <div class="wh-block"><div class="wh-url" id="wh-display-research">No webhook set — configure in n8n settings</div></div>
+            <button class="btn btn-g btn-sm btn-full" style="margin-top:.5rem;" onclick="gotoView('n8n')">Configure Webhook →</button>
+          </div></div>
         </div>
+      </div>
     </div>
 
-    <!-- ══ PRIVACY ══ -->
-    <div class="privacy-full" id="privacy">
-        <h3>🔒 Privacy & Data Policy</h3>
-        <strong>Your API Key:</strong> Stored only in JavaScript memory. Never written to localStorage, cookies, or any server. Gone when you refresh or close the tab.<br><br>
-        <strong>Your Inputs:</strong> Sent directly from your browser to Anthropic's API. Not routed through any third-party server.<br><br>
-        <strong>AI Processing:</strong> Powered by Anthropic Claude. See <a href="https://www.anthropic.com/privacy" target="_blank">Anthropic's Privacy Policy →</a><br><br>
-        <strong>No Tracking:</strong> No cookies, no analytics, no ads, no data sold — ever.<br><br>
-        <strong>Recommendation:</strong> For a team or public-facing deployment, use the multi-file version with a secure backend so the API key never touches the browser.
+    <!-- ══ LISTING GENERATOR ══ -->
+    <div class="view" id="view-listing">
+      <div class="ph"><div class="pt">📝 Listing Generator</div><div class="pd">Generate complete, SEO-optimised Shopify product listings ready to copy-paste or push directly to your store.</div></div>
+      <div class="tl">
+        <div>
+          <div class="fc">
+            <div class="fg">
+              <label class="fl">Product Name</label>
+              <input type="text" id="listing-name" placeholder="e.g. Magnetic Car Phone Mount with 360° Rotation" />
+            </div>
+            <div class="fg">
+              <label class="fl">Additional Details <span style="color:var(--text3);font-weight:400;text-transform:none;">(optional)</span></label>
+              <div class="fh">Colour options, key features, target audience, price point</div>
+              <textarea id="listing-details" style="min-height:80px;" placeholder="e.g. Available in black and silver, fits all phone sizes, strong magnetic hold, easy dashboard installation..."></textarea>
+            </div>
+            <div class="row-btns">
+              <button class="btn btn-p" id="listing-btn" onclick="runListing()">📝 Generate Listing</button>
+              <button class="btn btn-s btn-sm" id="listing-push-btn" onclick="pushToShopify()" style="display:none;">🛍 Push to Shopify</button>
+            </div>
+            <div class="lb" id="listing-loading"><div class="lb-inner"></div></div>
+            <div class="eb" id="listing-error"></div>
+            <div class="rb" id="listing-result">
+              <div class="rbt"><span class="rbl">✦ AI Result</span><div class="rba">
+                <button class="btn btn-xs btn-g" onclick="copyResult('listing')">📋 Copy</button>
+                <button class="btn btn-xs btn-g" onclick="copyAsJson('listing','Listing Generator')">{ } JSON</button>
+                <button class="btn btn-xs btn-g" onclick="sendToN8n('listing','Listing Generator')">⚡ n8n</button>
+                <button class="btn btn-xs btn-g" id="listing-shopify-inline" onclick="pushToShopify()" style="display:none;">🛍 Shopify</button>
+              </div></div>
+              <div class="rc" id="listing-rc"></div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="ic"><div class="ich">✅ What's Included</div><div class="icb">
+            <div class="badge-row">
+              <span class="bdg bdg-pu">SEO Title</span>
+              <span class="bdg bdg-gr">Meta Description</span>
+              <span class="bdg bdg-bl">Product Description</span>
+              <span class="bdg bdg-or">Key Features</span>
+              <span class="bdg bdg-pu">SEO Tags</span>
+            </div>
+          </div></div>
+          <div class="ic"><div class="ich">🛍 Shopify Integration</div><div class="icb">
+            <div class="sh-status bad" id="listing-sh-status"><span>●</span><span id="listing-sh-text">Not connected</span></div>
+            <div class="ii">Connect your store in <strong>Shopify Connect</strong> to push listings directly with one click.</div>
+            <button class="btn btn-g btn-sm btn-full" style="margin-top:.5rem;" onclick="gotoView('shopify')">Connect Shopify →</button>
+          </div></div>
+          <div class="ic"><div class="ich">⚡ n8n Webhook</div><div class="icb">
+            <div class="ii">Auto-send generated listings to n8n for further processing or Shopify import.</div>
+            <div class="wh-block"><div class="wh-url" id="wh-display-listing">No webhook set</div></div>
+            <button class="btn btn-g btn-sm btn-full" style="margin-top:.5rem;" onclick="gotoView('n8n')">Configure →</button>
+          </div></div>
+        </div>
+      </div>
     </div>
 
-</div>
+    <!-- ══ CUSTOMER SUPPORT ══ -->
+    <div class="view" id="view-support">
+      <div class="ph"><div class="pt">💬 Customer Support</div><div class="pd">Paste any customer message to receive a professional, empathetic reply ready to send in seconds.</div></div>
+      <div class="tl">
+        <div>
+          <div class="fc">
+            <div class="fg">
+              <label class="fl">Customer's Message</label>
+              <div class="fh">Paste the exact message your customer sent</div>
+              <textarea id="support-input" style="min-height:130px;" placeholder="Paste the customer's email or message here..."></textarea>
+            </div>
+            <div class="fg">
+              <label class="fl">Reply Tone</label>
+              <select id="support-tone">
+                <option value="professional">Professional &amp; Warm (recommended)</option>
+                <option value="friendly">Friendly &amp; Casual</option>
+                <option value="formal">Formal &amp; Corporate</option>
+                <option value="apologetic">Apologetic &amp; Empathetic</option>
+              </select>
+            </div>
+            <button class="btn btn-p" id="support-btn" onclick="runSupport()">💬 Draft Reply</button>
+            <div class="lb" id="support-loading"><div class="lb-inner"></div></div>
+            <div class="eb" id="support-error"></div>
+            <div class="rb" id="support-result">
+              <div class="rbt"><span class="rbl">✦ AI Result</span><div class="rba">
+                <button class="btn btn-xs btn-g" onclick="copyResult('support')">📋 Copy</button>
+                <button class="btn btn-xs btn-g" onclick="copyAsJson('support','Customer Support')">{ } JSON</button>
+                <button class="btn btn-xs btn-g" onclick="sendToN8n('support','Customer Support')">⚡ n8n</button>
+              </div></div>
+              <div class="rc" id="support-rc"></div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="ic"><div class="ich">✍ What's Included</div><div class="icb">
+            <div class="badge-row">
+              <span class="bdg bdg-gr">Direct Answer</span>
+              <span class="bdg bdg-bl">Solution Focused</span>
+              <span class="bdg bdg-pu">Under 150 Words</span>
+              <span class="bdg bdg-or">Professional Sign-off</span>
+            </div>
+          </div></div>
+          <div class="ic"><div class="ich">💡 Common Scenarios</div><div class="icb">
+            <button class="btn btn-g btn-sm btn-full" style="margin-bottom:.4rem;justify-content:flex-start;" onclick="quickFill('support-input','My order has not arrived yet. It has been 3 weeks. I want a refund.')">📦 Late delivery / refund</button>
+            <button class="btn btn-g btn-sm btn-full" style="margin-bottom:.4rem;justify-content:flex-start;" onclick="quickFill('support-input','The product I received is broken and not as described in the listing.')">⚠ Damaged item</button>
+            <button class="btn btn-g btn-sm btn-full" style="justify-content:flex-start;" onclick="quickFill('support-input','I ordered the wrong size, can I exchange it for a medium please?')">🔄 Exchange request</button>
+          </div></div>
+          <div class="ic"><div class="ich">⚡ n8n Webhook</div><div class="icb">
+            <div class="ii">Auto-forward replies to your helpdesk or CRM via n8n.</div>
+            <div class="wh-block"><div class="wh-url" id="wh-display-support">No webhook set</div></div>
+            <button class="btn btn-g btn-sm btn-full" style="margin-top:.5rem;" onclick="gotoView('n8n')">Configure →</button>
+          </div></div>
+        </div>
+      </div>
+    </div>
 
-<footer>
-    <p>DropAI © 2025 · Powered by <a href="https://anthropic.com" target="_blank">Claude AI</a> · <a href="#privacy">Privacy Policy</a></p>
-</footer>
+    <!-- ══ AD COPY GENERATOR ══ -->
+    <div class="view" id="view-adcopy">
+      <div class="ph"><div class="pt">📣 Ad Copy Generator</div><div class="pd">Generate scroll-stopping ad scripts and captions for TikTok, Instagram Reels, and Facebook — ready to film or post.</div></div>
+      <div class="tl">
+        <div>
+          <div class="fc">
+            <div class="fg">
+              <label class="fl">Product Name</label>
+              <input type="text" id="adcopy-product" placeholder="e.g. Posture Corrector Back Brace" />
+            </div>
+            <div class="fg">
+              <label class="fl">Target Audience</label>
+              <div class="fh">Who are you selling to? The more specific, the better the ad.</div>
+              <input type="text" id="adcopy-audience" placeholder="e.g. office workers aged 25–45 with back pain" />
+            </div>
+            <div class="fg">
+              <label class="fl">Platform</label>
+              <select id="adcopy-platform">
+                <option value="tiktok">TikTok (short video script)</option>
+                <option value="instagram">Instagram Reels (video script + caption)</option>
+                <option value="facebook">Facebook Ad (headline + body copy)</option>
+                <option value="all">All three platforms</option>
+              </select>
+            </div>
+            <button class="btn btn-p" id="adcopy-btn" onclick="runAdCopy()">📣 Generate Ad Copy</button>
+            <div class="lb" id="adcopy-loading"><div class="lb-inner"></div></div>
+            <div class="eb" id="adcopy-error"></div>
+            <div class="rb" id="adcopy-result">
+              <div class="rbt"><span class="rbl">✦ AI Result</span><div class="rba">
+                <button class="btn btn-xs btn-g" onclick="copyResult('adcopy')">📋 Copy</button>
+                <button class="btn btn-xs btn-g" onclick="copyAsJson('adcopy','Ad Copy')">{ } JSON</button>
+                <button class="btn btn-xs btn-g" onclick="sendToN8n('adcopy','Ad Copy Generator')">⚡ n8n</button>
+              </div></div>
+              <div class="rc" id="adcopy-rc"></div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="ic"><div class="ich">📣 What's Included</div><div class="icb">
+            <div class="badge-row">
+              <span class="bdg bdg-pu">Hook (0–3 sec)</span>
+              <span class="bdg bdg-gr">Script Lines</span>
+              <span class="bdg bdg-bl">Call to Action</span>
+              <span class="bdg bdg-or">Caption + Hashtags</span>
+            </div>
+          </div></div>
+          <div class="ic"><div class="ich">💡 Tips</div><div class="icb">
+            <div class="ii"><strong>Hook is everything.</strong> The first 2 seconds must stop the scroll — Claude will write this for you.</div>
+            <div class="ii"><strong>Be specific about pain.</strong> "Office workers with back pain" gets a better ad than just "adults".</div>
+            <div class="ii"><strong>Run all 3 platforms</strong> to get a full content pack for one product in seconds.</div>
+          </div></div>
+          <div class="ic"><div class="ich">⚡ n8n Webhook</div><div class="icb">
+            <div class="ii">Auto-send ad scripts to your content calendar or scheduling tool via n8n.</div>
+            <div class="wh-block"><div class="wh-url" id="wh-display-adcopy">No webhook set</div></div>
+            <button class="btn btn-g btn-sm btn-full" style="margin-top:.5rem;" onclick="gotoView('n8n')">Configure →</button>
+          </div></div>
+        </div>
+      </div>
+    </div>
 
-<!-- ══════════════════════════════════════
-     JAVASCRIPT
-══════════════════════════════════════ -->
+    <!-- ══ EMAIL MARKETING ══ -->
+    <div class="view" id="view-email">
+      <div class="ph"><div class="pt">✉ Email Marketing</div><div class="pd">Write high-converting emails for your store — abandoned cart recovery, welcome sequences, flash sales, and more.</div></div>
+      <div class="tl">
+        <div>
+          <div class="fc">
+            <div class="fg">
+              <label class="fl">Email Type</label>
+              <select id="email-type">
+                <option value="abandoned">Abandoned Cart Recovery</option>
+                <option value="welcome">Welcome Email (new subscriber)</option>
+                <option value="flash">Flash Sale / Promotion</option>
+                <option value="winback">Win-Back (inactive customer)</option>
+                <option value="review">Post-Purchase Review Request</option>
+              </select>
+            </div>
+            <div class="fg">
+              <label class="fl">Store / Brand Name</label>
+              <input type="text" id="email-brand" placeholder="e.g. GadgetNest, PetHaven, FitZone" />
+            </div>
+            <div class="fg">
+              <label class="fl">Product or Offer Details <span style="color:var(--text3);font-weight:400;text-transform:none;">(optional)</span></label>
+              <div class="fh">What product, discount, or offer is this email about?</div>
+              <textarea id="email-details" style="min-height:70px;" placeholder="e.g. 20% off all orders this weekend, free shipping, new posture corrector launch..."></textarea>
+            </div>
+            <button class="btn btn-p" id="email-btn" onclick="runEmail()">✉ Write Email</button>
+            <div class="lb" id="email-loading"><div class="lb-inner"></div></div>
+            <div class="eb" id="email-error"></div>
+            <div class="rb" id="email-result">
+              <div class="rbt"><span class="rbl">✦ AI Result</span><div class="rba">
+                <button class="btn btn-xs btn-g" onclick="copyResult('email')">📋 Copy</button>
+                <button class="btn btn-xs btn-g" onclick="copyAsJson('email','Email Marketing')">{ } JSON</button>
+                <button class="btn btn-xs btn-g" onclick="sendToN8n('email','Email Marketing')">⚡ n8n</button>
+              </div></div>
+              <div class="rc" id="email-rc"></div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="ic"><div class="ich">✉ Each Email Includes</div><div class="icb">
+            <div class="badge-row">
+              <span class="bdg bdg-pu">Subject Line</span>
+              <span class="bdg bdg-gr">Preview Text</span>
+              <span class="bdg bdg-bl">Full Body Copy</span>
+              <span class="bdg bdg-or">Clear CTA Button</span>
+            </div>
+          </div></div>
+          <div class="ic"><div class="ich">💡 Best Email Types to Start</div><div class="icb">
+            <div class="ii"><strong>Abandoned Cart</strong> — typically recovers 5–15% of lost sales. Write it first.</div>
+            <div class="ii"><strong>Welcome Email</strong> — highest open rate of any email. Sets the tone for your brand.</div>
+            <div class="ii"><strong>Win-Back</strong> — targets customers who haven't bought in 60+ days with a discount offer.</div>
+          </div></div>
+          <div class="ic"><div class="ich">⚡ n8n + Klaviyo / Mailchimp</div><div class="icb">
+            <div class="ii">Send generated emails to n8n and auto-create them as templates in Klaviyo or Mailchimp.</div>
+            <div class="wh-block"><div class="wh-url" id="wh-display-email">No webhook set</div></div>
+            <button class="btn btn-g btn-sm btn-full" style="margin-top:.5rem;" onclick="gotoView('n8n')">Configure →</button>
+          </div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PRICING STRATEGY ══ -->
+    <div class="view" id="view-pricing">
+      <div class="ph"><div class="pt">💰 Pricing Strategy</div><div class="pd">Get a complete pricing analysis — optimal price points, psychological pricing tactics, and competitor positioning strategy.</div></div>
+      <div class="tl">
+        <div>
+          <div class="fc">
+            <div class="fg">
+              <label class="fl">Product Name</label>
+              <input type="text" id="pricing-product" placeholder="e.g. Wireless Ear Cleaning Camera Kit" />
+            </div>
+            <div class="fg">
+              <label class="fl">Your Supplier Cost (per unit)</label>
+              <input type="text" id="pricing-cost" placeholder="e.g. £4.50 or $6" />
+            </div>
+            <div class="fg">
+              <label class="fl">Any Competitor Prices You Know Of <span style="color:var(--text3);font-weight:400;text-transform:none;">(optional)</span></label>
+              <div class="fh">Paste prices you've seen on Amazon, Etsy, or other Shopify stores</div>
+              <textarea id="pricing-competitors" style="min-height:70px;" placeholder="e.g. Amazon: £19.99, £24.99. Similar Shopify store: £27. AliExpress retail: £12..."></textarea>
+            </div>
+            <button class="btn btn-p" id="pricing-btn" onclick="runPricing()">💰 Analyse Pricing</button>
+            <div class="lb" id="pricing-loading"><div class="lb-inner"></div></div>
+            <div class="eb" id="pricing-error"></div>
+            <div class="rb" id="pricing-result">
+              <div class="rbt"><span class="rbl">✦ AI Result</span><div class="rba">
+                <button class="btn btn-xs btn-g" onclick="copyResult('pricing')">📋 Copy</button>
+                <button class="btn btn-xs btn-g" onclick="copyAsJson('pricing','Pricing Strategy')">{ } JSON</button>
+                <button class="btn btn-xs btn-g" onclick="sendToN8n('pricing','Pricing Strategy')">⚡ n8n</button>
+              </div></div>
+              <div class="rc" id="pricing-rc"></div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="ic"><div class="ich">💰 What You'll Get</div><div class="icb">
+            <div class="badge-row">
+              <span class="bdg bdg-gr">Recommended Price</span>
+              <span class="bdg bdg-pu">Profit Margin</span>
+              <span class="bdg bdg-bl">Psych Pricing Tips</span>
+              <span class="bdg bdg-or">Bundle Ideas</span>
+            </div>
+          </div></div>
+          <div class="ic"><div class="ich">📐 Pricing Rules of Thumb</div><div class="icb">
+            <div class="ii"><strong>3× rule.</strong> Aim to sell at 3–4× your supplier cost for healthy margins after fees.</div>
+            <div class="ii"><strong>Charm pricing.</strong> £19.99 outperforms £20.00 — Claude will factor this in automatically.</div>
+            <div class="ii"><strong>Bundle up.</strong> Offering 2-packs or accessory bundles can double your average order value.</div>
+          </div></div>
+          <div class="ic"><div class="ich">⚡ n8n Webhook</div><div class="icb">
+            <div class="ii">Log pricing decisions to a Google Sheet or Notion database automatically via n8n.</div>
+            <div class="wh-block"><div class="wh-url" id="wh-display-pricing">No webhook set</div></div>
+            <button class="btn btn-g btn-sm btn-full" style="margin-top:.5rem;" onclick="gotoView('n8n')">Configure →</button>
+          </div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SHOPIFY CONNECT ══ -->
+    <div class="view" id="view-shopify">
+      <div class="ph"><div class="pt">🛍 Shopify Connect</div><div class="pd">Connect your Shopify store to push AI-generated listings directly — no copy-pasting needed.</div></div>
+      <div class="fc" style="max-width:640px;margin-bottom:1.25rem;">
+        <h2>Store Connection</h2>
+        <p class="sub">Enter your Shopify store credentials. Your Admin API token is used only in your browser and is never stored on any server.</p>
+        <div class="fg"><label class="fl">Store URL</label><div class="fh">Your Shopify store domain</div><input type="text" id="shopify-store" placeholder="your-store.myshopify.com" /></div>
+        <div class="fg"><label class="fl">Admin API Access Token</label><div class="fh">Found in Shopify Admin → Settings → Apps → Develop Apps → API credentials</div><input type="password" id="shopify-token" placeholder="shpat_..." /></div>
+        <div style="display:flex;gap:.6rem;">
+          <button class="btn btn-p" onclick="connectShopify()">🔗 Test Connection</button>
+          <button class="btn btn-g" onclick="disconnectShopify()">Disconnect</button>
+        </div>
+        <div class="eb" id="shopify-error"></div>
+        <div class="sh-status bad" id="shopify-status" style="margin-top:1rem;"><span>●</span><span id="shopify-status-text">Not connected — enter your credentials above</span></div>
+      </div>
+      <div class="sh-grid">
+        <div class="sh-card">
+          <h3>📦 How to Get Your API Token</h3>
+          <p>You need a private app token with product write permissions.</p>
+          <div class="step-list">
+            <div class="si"><div class="sn">1</div>Go to your Shopify Admin → <strong>Settings</strong></div>
+            <div class="si"><div class="sn">2</div>Click <strong>Apps and sales channels</strong> → <strong>Develop apps</strong></div>
+            <div class="si"><div class="sn">3</div>Create an app, then go to <strong>API credentials</strong></div>
+            <div class="si"><div class="sn">4</div>Enable <strong>write_products</strong> scope under Admin API</div>
+            <div class="si"><div class="sn">5</div>Install the app and copy your <strong>Admin API access token</strong></div>
+          </div>
+        </div>
+        <div class="sh-card">
+          <h3>⚡ What You Can Do</h3>
+          <p>Once connected, DropAI can interact with your store automatically.</p>
+          <div class="badge-row" style="margin-bottom:1rem;">
+            <span class="bdg bdg-gr">Push Product Listings</span>
+            <span class="bdg bdg-bl">Set Prices</span>
+            <span class="bdg bdg-pu">Add SEO Tags</span>
+            <span class="bdg bdg-or">Set as Draft</span>
+          </div>
+          <div class="ii">Generated listings from the <strong>Listing Generator</strong> can be pushed directly — title, description, features, and tags all included.</div>
+        </div>
+        <div class="sh-card">
+          <h3>🔄 n8n + Shopify Workflow</h3>
+          <p>Combine DropAI with n8n for full automation without any code.</p>
+          <div class="step-list">
+            <div class="si"><div class="sn">1</div>DropAI generates a listing via AI</div>
+            <div class="si"><div class="sn">2</div>Result is sent to your n8n webhook automatically</div>
+            <div class="si"><div class="sn">3</div>n8n formats and posts it to the Shopify API</div>
+            <div class="si"><div class="sn">4</div>Product goes live on your store automatically</div>
+          </div>
+          <button class="btn btn-g btn-sm" style="margin-top:.85rem;" onclick="gotoView('n8n')">Set up n8n workflow →</button>
+        </div>
+        <div class="sh-card">
+          <h3>🔒 Security Notes</h3>
+          <p>Your Shopify token is handled with the same security as your API key.</p>
+          <div class="ii">• Token is stored only in browser memory — never written to disk or sent anywhere except Shopify's own API.</div>
+          <div class="ii">• All API calls go directly from your browser to Shopify.</div>
+          <div class="ii">• Use a private app token with only the permissions you need (write_products).</div>
+          <div class="ii">• Revoke the token at any time in your Shopify Admin.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ N8N AUTOMATION ══ -->
+    <div class="view" id="view-n8n">
+      <div class="ph"><div class="pt">⚡ n8n Automation</div><div class="pd">Configure webhook endpoints so DropAI automatically sends AI results to your n8n workflows for full automation.</div></div>
+      <div class="fc" style="max-width:640px;margin-bottom:1.25rem;">
+        <h2>Webhook Configuration</h2>
+        <p class="sub">Set a webhook URL for each tool. When you click "Send to n8n" or enable auto-send in settings, results are posted to these URLs as JSON.</p>
+        <div class="fg"><label class="fl">Product Research Webhook URL</label><input type="text" id="wh-research" placeholder="https://your-n8n.cloud/webhook/xxxxxx" /></div>
+        <div class="fg"><label class="fl">Listing Generator Webhook URL</label><input type="text" id="wh-listing" placeholder="https://your-n8n.cloud/webhook/xxxxxx" /></div>
+        <div class="fg"><label class="fl">Ad Copy Generator Webhook URL</label><input type="text" id="wh-adcopy" placeholder="https://your-n8n.cloud/webhook/xxxxxx" /></div>
+        <div class="fg"><label class="fl">Email Marketing Webhook URL</label><input type="text" id="wh-email" placeholder="https://your-n8n.cloud/webhook/xxxxxx" /></div>
+        <div class="fg"><label class="fl">Pricing Strategy Webhook URL</label><input type="text" id="wh-pricing" placeholder="https://your-n8n.cloud/webhook/xxxxxx" /></div>
+        <div class="fg"><label class="fl">Customer Support Webhook URL</label><input type="text" id="wh-support" placeholder="https://your-n8n.cloud/webhook/xxxxxx" /></div>
+        <div style="display:flex;gap:.6rem;">
+          <button class="btn btn-p" onclick="saveWebhooks()">💾 Save Webhooks</button>
+          <button class="btn btn-g" onclick="testWebhooks()">🧪 Test All</button>
+        </div>
+        <div class="eb" id="n8n-error"></div>
+      </div>
+      <div class="n8n-grid">
+        <div class="n8n-card">
+          <h3>📖 How to Set Up in n8n</h3>
+          <p>Create a Webhook trigger node in n8n to receive DropAI data.</p>
+          <div class="step-list">
+            <div class="si"><div class="sn">1</div>Open n8n and create a new workflow</div>
+            <div class="si"><div class="sn">2</div>Add a <strong>Webhook</strong> node as the trigger</div>
+            <div class="si"><div class="sn">3</div>Set method to <strong>POST</strong>, authentication to <strong>None</strong></div>
+            <div class="si"><div class="sn">4</div>Copy the <strong>Webhook URL</strong> from n8n into the field above</div>
+            <div class="si"><div class="sn">5</div>Activate the workflow, then test it from DropAI</div>
+          </div>
+        </div>
+        <div class="n8n-card">
+          <h3>📦 Payload Structure</h3>
+          <p>This is the JSON DropAI sends to your n8n webhook on every request.</p>
+          <pre class="jp">{
+  "source": "DropAI",
+  "tool": "listing_generator",
+  "timestamp": "2025-01-15T10:30:00Z",
+  "input": {
+    "product": "Magnetic Car Phone Mount",
+    "details": "Black and silver..."
+  },
+  "output": "TITLE: Magnetic Car Phone...",
+  "session_id": "drop_abc123"
+}</pre>
+        </div>
+        <div class="n8n-card">
+          <h3>🛍 n8n → Shopify Template</h3>
+          <p>Use this workflow pattern to automatically create Shopify products from DropAI listings.</p>
+          <div class="n8n-wf">⚡ Recommended Workflow</div>
+          <div class="step-list">
+            <div class="si"><div class="sn">1</div><strong>Webhook</strong> — receives listing from DropAI</div>
+            <div class="si"><div class="sn">2</div><strong>Code node</strong> — parses title, description, tags</div>
+            <div class="si"><div class="sn">3</div><strong>HTTP Request</strong> — POST to Shopify Products API</div>
+            <div class="si"><div class="sn">4</div><strong>Slack or Email</strong> — notifies you when done</div>
+          </div>
+        </div>
+        <div class="n8n-card">
+          <h3>🤖 Automation Ideas</h3>
+          <p>What you can build once webhooks are connected.</p>
+          <div class="badge-row" style="margin-bottom:.75rem;">
+            <span class="bdg bdg-gr">Auto-publish listings</span>
+            <span class="bdg bdg-bl">Save to Notion</span>
+            <span class="bdg bdg-pu">Log to Google Sheets</span>
+            <span class="bdg bdg-or">Email your team</span>
+          </div>
+          <div class="ii">Every AI result from DropAI can trigger any workflow in n8n — from saving to a database, to importing into Shopify, to posting on social media.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SETTINGS ══ -->
+    <div class="view" id="view-settings">
+      <div class="ph"><div class="pt">⚙ Settings</div><div class="pd">Manage your API key, preferences, and account options.</div></div>
+      <div class="st-layout">
+        <div class="st-tabs">
+          <button class="stab active" onclick="switchStab('api',this)">🔑 API Key</button>
+          <button class="stab" onclick="switchStab('appearance',this)">🎨 Appearance</button>
+          <button class="stab" onclick="switchStab('privacy',this)">🔒 Privacy</button>
+          <button class="stab" onclick="switchStab('about',this)">ℹ About</button>
+        </div>
+        <div>
+          <div class="st-panel" id="stab-api">
+            <h3>API Key</h3>
+            <p class="sp">Your Anthropic key is used to run all AI tools. It stays in your browser only — never saved or shared.</p>
+            <div class="sr"><div class="srm"><div class="srn">Connection Status</div><div class="srd">Whether your API key is currently active</div></div><div class="src"><div class="tbb pill no-key" id="settings-status"><span class="sdot"></span><span id="settings-status-text">No API Key</span></div></div></div>
+            <div class="sr"><div class="srm"><div class="srn">Change API Key</div><div class="srd">Re-enter or update your Anthropic key</div></div><div class="src"><button class="btn btn-s btn-sm" onclick="resetKey()">Change Key</button></div></div>
+            <div class="sr"><div class="srm"><div class="srn">AI Model</div><div class="srd">claude-haiku-4-5 — fastest and most cost-efficient model</div></div><div class="src"><span class="bdg bdg-pu">claude-haiku-4-5</span></div></div>
+            <div class="sr"><div class="srm"><div class="srn">Download App</div><div class="srd">Save this file to use offline or host on GitHub Pages</div></div><div class="src"><button class="btn btn-s btn-sm" onclick="downloadFile()">⬇ Download</button></div></div>
+          </div>
+          <div class="st-panel hidden" id="stab-appearance">
+            <h3>Appearance</h3>
+            <p class="sp">Customise how DropAI looks and behaves.</p>
+            <div class="sr"><div class="srm"><div class="srn">Streaming Responses</div><div class="srd">Show AI output word-by-word as it generates (faster feeling)</div></div><div class="src"><div class="toggle on" id="tog-streaming" onclick="toggleSetting('streaming',this)"></div></div></div>
+            <div class="sr"><div class="srm"><div class="srn">Auto-send to n8n</div><div class="srd">Automatically POST results to webhooks after every generation</div></div><div class="src"><div class="toggle" id="tog-autosend" onclick="toggleSetting('autosend',this)"></div></div></div>
+          </div>
+          <div class="st-panel hidden" id="stab-privacy">
+            <h3>Privacy &amp; Data</h3>
+            <p class="sp">How DropAI handles your information.</p>
+            <div class="sr"><div class="srm"><div class="srn">Your API Key</div><div class="srd">Stored only in JavaScript memory. Never written to storage, cookies, or any server. Cleared when you close the tab.</div></div></div>
+            <div class="sr"><div class="srm"><div class="srn">Your Inputs</div><div class="srd">Sent directly from your browser to Anthropic's API. Never routed through any third-party server.</div></div></div>
+            <div class="sr"><div class="srm"><div class="srn">Tracking</div><div class="srd">No cookies. No analytics. No ads. No data is ever sold or shared.</div></div><div class="src"><span class="bdg bdg-gr">Zero tracking</span></div></div>
+            <div class="sr"><div class="srm"><div class="srn">AI Processing</div><div class="srd">Powered by Anthropic Claude. See <a href="https://www.anthropic.com/privacy" target="_blank" style="color:var(--accent2);">Anthropic's Privacy Policy</a>.</div></div></div>
+          </div>
+          <div class="st-panel hidden" id="stab-about">
+            <h3>About DropAI</h3>
+            <p class="sp">Your complete Shopify dropshipping toolkit powered by Claude AI.</p>
+            <div class="sr"><div class="srm"><div class="srn">Version</div></div><div class="src"><span class="bdg bdg-pu">v2.0</span></div></div>
+            <div class="sr"><div class="srm"><div class="srn">AI Model</div></div><div class="src"><span class="bdg bdg-bl">Claude Haiku 4.5</span></div></div>
+            <div class="sr"><div class="srm"><div class="srn">Built For</div><div class="srd">Shopify dropshippers who want to automate with AI and n8n</div></div></div>
+            <div class="sr"><div class="srm"><div class="srn">Source Code</div><div class="srd">Single-file app — download it, host it on GitHub Pages, or share it freely.</div></div><div class="src"><button class="btn btn-s btn-sm" onclick="downloadFile()">⬇ Download</button></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /page -->
+</div><!-- /main -->
+
+<div id="toast"></div>
+
 <script>
 'use strict';
 
-// ── State ─────────────────────────────────────────
+/* ── State ── */
 let ANTHROPIC_KEY = null;
+let SHOPIFY_STORE = null;
+let SHOPIFY_TOKEN = null;
+let WEBHOOKS      = { research:'', listing:'', adcopy:'', email:'', pricing:'', support:'' };
+let SETTINGS      = { streaming:true, autosend:false };
+let activityLog   = [];
+let stats         = { requests:0, listings:0, ads:0 };
 
-// ── Download button ───────────────────────────────
-function downloadFile() {
-    const html = document.documentElement.outerHTML;
-    const blob = new Blob([html], { type: 'text/html' });
-    const url  = URL.createObjectURL(blob);
-    const a    = document.createElement('a');
-    a.href     = url;
-    a.download = 'dropai.html';
-    a.click();
-    URL.revokeObjectURL(url);
+/* ── Navigation ── */
+const TITLES = { dashboard:'Dashboard', research:'Product Research', listing:'Listing Generator', adcopy:'Ad Copy Generator', email:'Email Marketing', pricing:'Pricing Strategy', support:'Customer Support', shopify:'Shopify Connect', n8n:'n8n Automation', settings:'Settings' };
+
+function gotoView(v) {
+  document.querySelectorAll('.view').forEach(x => x.classList.remove('active'));
+  const el = document.getElementById('view-' + v);
+  if (el) el.classList.add('active');
+  document.querySelectorAll('.nb[data-view]').forEach(b => b.classList.toggle('active', b.dataset.view === v));
+  document.getElementById('breadcrumb').textContent = TITLES[v] || v;
+  document.getElementById('mainPage').scrollTop = 0;
+}
+document.querySelectorAll('.nb[data-view]').forEach(b => b.addEventListener('click', () => gotoView(b.dataset.view)));
+
+/* ── Settings tabs ── */
+function switchStab(tab, btn) {
+  document.querySelectorAll('.st-panel').forEach(p => p.classList.add('hidden'));
+  document.querySelectorAll('.stab').forEach(b => b.classList.remove('active'));
+  document.getElementById('stab-' + tab).classList.remove('hidden');
+  btn.classList.add('active');
+}
+function toggleSetting(key, el) {
+  SETTINGS[key] = !SETTINGS[key];
+  el.classList.toggle('on', SETTINGS[key]);
 }
 
-// ── Key modal ─────────────────────────────────────
+/* ── API Key ── */
 window.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('keyInput').addEventListener('keydown', e => {
-        if (e.key === 'Enter') saveKey();
-    });
+  document.getElementById('keyInput').addEventListener('keydown', e => { if (e.key === 'Enter') saveKey(); });
 });
 
 function saveKey() {
-    const input = document.getElementById('keyInput').value.trim();
-    const errEl = document.getElementById('keyError');
-    if (!input.startsWith('sk-ant-')) {
-        errEl.classList.add('visible');
-        return;
-    }
-    errEl.classList.remove('visible');
-    ANTHROPIC_KEY = input;
-    document.getElementById('keyModal').classList.add('hidden');
-    const badge = document.getElementById('statusBadge');
-    badge.className = 'status-badge connected';
-    document.getElementById('statusText').textContent = 'Claude AI Active';
+  const val = document.getElementById('keyInput').value.trim();
+  const err = document.getElementById('keyError');
+  if (!val.startsWith('sk-ant-')) { err.classList.add('visible'); return; }
+  err.classList.remove('visible');
+  ANTHROPIC_KEY = val;
+  document.getElementById('keyModal').classList.add('hidden');
+  updateBadge(true);
+  showToast('✓ Connected to Claude AI', 'green');
 }
 
 function resetKey() {
-    ANTHROPIC_KEY = null;
-    document.getElementById('keyInput').value = '';
-    document.getElementById('keyModal').classList.remove('hidden');
-    const badge = document.getElementById('statusBadge');
-    badge.className = 'status-badge';
-    document.getElementById('statusText').textContent = 'No API Key';
+  ANTHROPIC_KEY = null;
+  document.getElementById('keyInput').value = '';
+  document.getElementById('keyModal').classList.remove('hidden');
+  updateBadge(false);
 }
 
-// ── Tab switching ─────────────────────────────────
-function switchTab(tab, btn) {
-    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.getElementById('panel-' + tab).classList.add('active');
-    btn.classList.add('active');
+function updateBadge(on) {
+  const pairs = [['statusBadge','statusText'],['settings-status','settings-status-text']];
+  pairs.forEach(([bid, tid]) => {
+    const b = document.getElementById(bid);
+    const t = document.getElementById(tid);
+    if (b) b.className = 'tbb pill ' + (on ? 'connected' : 'no-key');
+    if (t) t.textContent = on ? 'Connected' : 'No API Key';
+  });
 }
 
-// ── Claude API call ───────────────────────────────
-async function callClaude(prompt) {
-    if (!ANTHROPIC_KEY) {
-        document.getElementById('keyModal').classList.remove('hidden');
-        throw new Error('Please connect your API key first.');
+/* ── Toast ── */
+let tt;
+function showToast(msg, color) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.style.borderColor = color === 'green' ? 'rgba(52,211,153,.4)' : color === 'red' ? 'rgba(248,113,113,.4)' : color === 'blue' ? 'rgba(96,165,250,.4)' : 'var(--border2)';
+  el.classList.add('show');
+  clearTimeout(tt);
+  tt = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+/* ── Activity ── */
+function logActivity(name, icon, tool) {
+  activityLog.unshift({ name, icon, time: new Date() });
+  if (activityLog.length > 20) activityLog.pop();
+  stats.requests++;
+  if (tool === 'listing') stats.listings++;
+  if (tool === 'adcopy') stats.ads++;
+  updateDashboard();
+}
+
+function updateDashboard() {
+  ['statRequests','statListings','statAds'].forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = [stats.requests, stats.listings, stats.ads][i];
+  });
+  const list = document.getElementById('activityList');
+  if (!list) return;
+  if (!activityLog.length) { list.innerHTML = '<div class="act-empty">No activity yet. Use any AI tool to get started.</div>'; return; }
+  list.innerHTML = activityLog.slice(0,8).map(a => {
+    const mins = Math.floor((new Date() - a.time) / 60000);
+    const ago  = mins < 1 ? 'just now' : mins < 60 ? mins + 'm ago' : Math.floor(mins/60) + 'h ago';
+    return `<div class="act-item"><div class="act-ico">${a.icon}</div><div class="act-body"><div class="act-name">${esc(a.name)}</div><div class="act-time">${a.time.toLocaleTimeString()}</div></div><div class="act-ago">${ago}</div></div>`;
+  }).join('');
+}
+
+function clearActivity() { activityLog = []; stats = {requests:0,listings:0,support:0}; updateDashboard(); }
+
+/* ── Claude API with streaming ── */
+async function callClaude(prompt, onChunk, onDone) {
+  if (!ANTHROPIC_KEY) { document.getElementById('keyModal').classList.remove('hidden'); throw new Error('Please connect your API key first.'); }
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type':'application/json', 'x-api-key':ANTHROPIC_KEY, 'anthropic-version':'2023-06-01', 'anthropic-dangerous-direct-browser-access':'true' },
+    body: JSON.stringify({ model:'claude-haiku-4-5-20251001', max_tokens:1500, stream:true, messages:[{role:'user',content:prompt}] })
+  });
+  if (res.status === 401) throw new Error('Invalid API key — click the badge at the top to update it.');
+  if (res.status === 429) throw new Error('Rate limit reached — please wait a moment and try again.');
+  if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e?.error?.message || 'API error — please try again.'); }
+
+  const reader = res.body.getReader();
+  const dec    = new TextDecoder();
+  let full = '', buf = '';
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buf += dec.decode(value, {stream:true});
+    const lines = buf.split('\n');
+    buf = lines.pop();
+    for (const line of lines) {
+      if (!line.startsWith('data: ')) continue;
+      const d = line.slice(6).trim();
+      if (d === '[DONE]') continue;
+      try {
+        const p = JSON.parse(d);
+        if (p.type === 'content_block_delta' && p.delta?.type === 'text_delta') {
+          full += p.delta.text;
+          onChunk && onChunk(full);
+        }
+      } catch {}
     }
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': ANTHROPIC_KEY,
-            'anthropic-version': '2023-06-01',
-            'anthropic-dangerous-direct-browser-access': 'true'
-        },
-        body: JSON.stringify({
-            model: 'claude-opus-4-5',
-            max_tokens: 1500,
-            messages: [{ role: 'user', content: prompt }]
-        })
+  }
+  onDone && onDone(full);
+  return full;
+}
+
+/* ── UI helpers ── */
+function setLoading(pfx, on) {
+  const bar = document.getElementById(pfx+'-loading');
+  const btn = document.getElementById(pfx+'-btn');
+  const err = document.getElementById(pfx+'-error');
+  if (bar) bar.classList.toggle('visible', on);
+  if (btn) btn.disabled = on;
+  if (err) err.classList.remove('visible');
+}
+
+function setStream(pfx, text, streaming) {
+  const box = document.getElementById(pfx+'-result');
+  const rc  = document.getElementById(pfx+'-rc');
+  if (!box || !rc) return;
+  box.classList.add('visible');
+  rc.textContent = text;
+  rc.classList.toggle('streaming', streaming);
+}
+
+function showErr(pfx, msg) {
+  const el = document.getElementById(pfx+'-error');
+  if (el) { el.textContent = '⚠ ' + msg; el.classList.add('visible'); }
+  document.getElementById(pfx+'-result')?.classList.remove('visible');
+}
+
+function esc(t) { return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+/* ── Copy / export ── */
+function copyResult(pfx) {
+  const el = document.getElementById(pfx+'-rc');
+  if (!el) return;
+  navigator.clipboard.writeText(el.textContent||'').then(() => showToast('✓ Copied to clipboard','green'));
+}
+
+function copyAsJson(pfx, tool) {
+  const el = document.getElementById(pfx+'-rc');
+  if (!el || !el.textContent) return;
+  const j = JSON.stringify({ source:'DropAI', tool, timestamp:new Date().toISOString(), output:el.textContent }, null, 2);
+  navigator.clipboard.writeText(j).then(() => showToast('✓ Copied as JSON','blue'));
+}
+
+/* ── n8n ── */
+function saveWebhooks() {
+  WEBHOOKS.research = document.getElementById('wh-research').value.trim();
+  WEBHOOKS.listing  = document.getElementById('wh-listing').value.trim();
+  WEBHOOKS.adcopy   = document.getElementById('wh-adcopy').value.trim();
+  WEBHOOKS.email    = document.getElementById('wh-email').value.trim();
+  WEBHOOKS.pricing  = document.getElementById('wh-pricing').value.trim();
+  WEBHOOKS.support  = document.getElementById('wh-support').value.trim();
+  updateWhDisplays();
+  showToast('✓ Webhooks saved','green');
+}
+
+function updateWhDisplays() {
+  [['wh-display-research','research'],['wh-display-listing','listing'],['wh-display-adcopy','adcopy'],['wh-display-email','email'],['wh-display-pricing','pricing'],['wh-display-support','support']].forEach(([id,key]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (WEBHOOKS[key]) { el.textContent = WEBHOOKS[key]; el.classList.add('has'); }
+    else { el.textContent = 'No webhook set — configure in n8n settings'; el.classList.remove('has'); }
+  });
+}
+
+async function sendToN8n(pfx, tool) {
+  const url = WEBHOOKS[pfx];
+  if (!url) { showToast('⚠ No webhook set for this tool — configure in n8n settings','red'); return; }
+  const el = document.getElementById(pfx+'-rc');
+  if (!el || !el.textContent) return;
+  showToast('Sending to n8n…', null);
+  try {
+    await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ source:'DropAI', tool, timestamp:new Date().toISOString(), output:el.textContent, session_id:'drop_'+Math.random().toString(36).slice(2,8) }), mode:'no-cors' });
+    showToast('✓ Sent to n8n','green');
+  } catch { showToast('⚠ Failed to reach webhook — check the URL','red'); }
+}
+
+async function testWebhooks() {
+  saveWebhooks();
+  let n = 0;
+  for (const [key, url] of Object.entries(WEBHOOKS)) {
+    if (!url) continue;
+    try { await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ source:'DropAI', tool:key, type:'test', timestamp:new Date().toISOString() }), mode:'no-cors' }); n++; } catch {}
+  }
+  showToast(n > 0 ? `✓ Test sent to ${n} webhook(s)` : '⚠ No webhooks configured yet', n > 0 ? 'green' : 'red');
+}
+
+/* ── Shopify ── */
+function connectShopify() {
+  const store = document.getElementById('shopify-store').value.trim().replace(/https?:\/\//,'');
+  const token = document.getElementById('shopify-token').value.trim();
+  const err   = document.getElementById('shopify-error');
+  err.classList.remove('visible');
+  if (!store || !token) { err.textContent = '⚠ Please enter both your store URL and API token.'; err.classList.add('visible'); return; }
+  if (!store.includes('.')) { err.textContent = '⚠ Store URL should look like: your-store.myshopify.com'; err.classList.add('visible'); return; }
+  if (!token.startsWith('shpat_') && !token.startsWith('shpca_')) { err.textContent = '⚠ Token should start with shpat_ (or shpca_ for custom apps).'; err.classList.add('visible'); return; }
+  SHOPIFY_STORE = store; SHOPIFY_TOKEN = token;
+  const ss = document.getElementById('shopify-status');
+  const st = document.getElementById('shopify-status-text');
+  if (ss) ss.className = 'sh-status ok';
+  if (st) st.textContent = '● Connected to ' + store;
+  const ls = document.getElementById('listing-sh-status');
+  const lt = document.getElementById('listing-sh-text');
+  if (ls) ls.className = 'sh-status ok';
+  if (lt) lt.textContent = '● Connected — ' + store;
+  document.getElementById('listing-push-btn').style.display = '';
+  document.getElementById('listing-shopify-inline').style.display = '';
+  showToast('✓ Shopify connected','green');
+}
+
+function disconnectShopify() {
+  SHOPIFY_STORE = null; SHOPIFY_TOKEN = null;
+  document.getElementById('shopify-store').value = '';
+  document.getElementById('shopify-token').value = '';
+  [['shopify-status','shopify-status-text','Not connected — enter credentials above'],['listing-sh-status','listing-sh-text','Not connected']].forEach(([sid,tid,msg]) => {
+    const s = document.getElementById(sid); const t = document.getElementById(tid);
+    if (s) s.className = 'sh-status bad'; if (t) t.textContent = msg;
+  });
+  document.getElementById('listing-push-btn').style.display = 'none';
+  document.getElementById('listing-shopify-inline').style.display = 'none';
+  showToast('Shopify disconnected', null);
+}
+
+async function pushToShopify() {
+  if (!SHOPIFY_STORE || !SHOPIFY_TOKEN) { showToast('⚠ Connect Shopify first','red'); gotoView('shopify'); return; }
+  const rc = document.getElementById('listing-rc');
+  if (!rc || !rc.textContent) { showToast('⚠ Generate a listing first','red'); return; }
+  const text = rc.textContent;
+  const titleMatch = text.match(/TITLE:\s*(.+)/i);
+  const title = titleMatch ? titleMatch[1].trim().replace(/\*+/g,'').trim() : 'New Product';
+  const tagsMatch  = text.match(/SEO TAGS?:?\s*(.+)/i);
+  const tags = tagsMatch ? tagsMatch[1].split(',').map(t=>t.trim()).filter(Boolean) : ['dropship'];
+  const bodyHtml = '<p>' + esc(text).replace(/\n\n/g,'</p><p>').replace(/\n/g,'<br>') + '</p>';
+  showToast('Pushing to Shopify…', null);
+  try {
+    const r = await fetch(`https://${SHOPIFY_STORE}/admin/api/2024-01/products.json`, {
+      method:'POST',
+      headers:{'Content-Type':'application/json','X-Shopify-Access-Token':SHOPIFY_TOKEN},
+      body:JSON.stringify({ product:{ title, body_html:bodyHtml, tags:tags.join(', '), status:'draft', vendor:'DropAI', product_type:'Dropship' }})
     });
-    if (res.status === 401) throw new Error('Invalid API key. Click the badge top-right to re-enter it.');
-    if (res.status === 429) throw new Error('Rate limit hit — wait a moment and try again.');
-    if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err?.error?.message || 'API error — please try again.');
-    }
-    const data = await res.json();
-    return data.content[0].text;
+    if (r.ok) { showToast('✓ Product created in Shopify (Draft)','green'); logActivity('Pushed to Shopify: '+title.slice(0,35),'🛍','shopify'); }
+    else { const d = await r.json().catch(()=>({})); showToast('⚠ Shopify error: '+(d?.errors?.base?.[0]||r.status),'red'); }
+  } catch { showToast('⚠ Could not reach Shopify. Use n8n as the bridge instead.','red'); }
 }
 
-// ── UI helpers ────────────────────────────────────
-function setLoading(ids, on) {
-    document.getElementById(ids.error).classList.remove('visible');
-    document.getElementById(ids.btn).disabled = on;
-    const r = document.getElementById(ids.result);
-    if (on) {
-        r.className = 'result-box loading visible';
-        r.innerHTML = '<div class="spinner"></div> Claude is thinking...';
-    }
-}
-
-function showResult(ids, text) {
-    const r = document.getElementById(ids.result);
-    r.className = 'result-box visible';
-    r.innerHTML = `
-        <div class="result-header">
-            <span class="result-label">✨ AI Result</span>
-            <button class="btn-copy" onclick="copyText(this)">📋 Copy</button>
-        </div>
-        <div style="white-space:pre-wrap;line-height:1.75;">${escHtml(text)}</div>
-    `;
-    r.querySelector('.btn-copy')._text = text;
-}
-
-function showError(ids, msg) {
-    document.getElementById(ids.result).classList.remove('visible', 'loading');
-    const e = document.getElementById(ids.error);
-    e.textContent = '⚠️ ' + msg;
-    e.classList.add('visible');
-}
-
-function escHtml(t) {
-    return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-
-function copyText(btn) {
-    navigator.clipboard.writeText(btn._text || '').then(() => {
-        btn.textContent = '✅ Copied!';
-        setTimeout(() => btn.textContent = '📋 Copy', 2200);
-    });
-}
-
-// ── Prompts ───────────────────────────────────────
+/* ── Prompts ── */
 const PROMPTS = {
-    research: niche => `You are a dropshipping expert. A user wants product ideas for this niche: "${niche}".
+  research: niche =>
+`You are an expert dropshipping consultant. The user wants product ideas for this niche: "${niche}".
 
-Give exactly 4 winning product ideas. For each include:
-- 🛍️ Product Name
-- ✅ Why it works for dropshipping (1–2 sentences)
-- 📦 AliExpress sourcing tip (search terms + what to look for)
-- 💰 Estimated buy price / sell price / profit margin %
-- 🎥 TikTok or Instagram content angle
+Give exactly 4 winning product ideas. For each one, include:
+🛍 Product Name
+✅ Why it works for dropshipping (1–2 sentences)
+📦 AliExpress sourcing tip (search terms + what to look for)
+💰 Estimated supplier cost / retail price / profit margin %
+🎥 TikTok or Instagram content angle (specific and actionable)
 
-Separate each product clearly. Be specific and practical.`,
+Separate each product with ---
+Be specific, practical, and commercially focused.`,
 
-    listing: (product, details) => `Write a complete Shopify product listing for: "${product}".
-${details ? `Extra details: ${details}` : ''}
+  listing: (p, d) =>
+`Write a complete, professional Shopify product listing for: "${p}".
+${d ? 'Additional details: ' + d : ''}
 
-Use this exact structure:
+Use this exact format:
 
-**TITLE:** (SEO-optimized, under 70 characters)
+TITLE: (SEO-optimised, under 70 characters)
 
-**META DESCRIPTION:** (under 160 characters, for Google)
+META DESCRIPTION: (under 160 characters, compelling for Google)
 
-**PRODUCT DESCRIPTION:**
-(3–4 engaging paragraphs, benefit-focused, conversion-optimized)
+PRODUCT DESCRIPTION:
+(3–4 engaging paragraphs. Benefit-focused. Speak to the customer's desires and pain points. No filler.)
 
-**KEY FEATURES:**
-• Feature 1
-• Feature 2
-• Feature 3
-• Feature 4
-• Feature 5
+KEY FEATURES:
+• Feature 1 — specific benefit
+• Feature 2 — specific benefit
+• Feature 3 — specific benefit
+• Feature 4 — specific benefit
+• Feature 5 — specific benefit
 
-**SEO TAGS:** (5 keywords, comma-separated)
+SEO TAGS: keyword1, keyword2, keyword3, keyword4, keyword5
 
-Make it persuasive, professional, ready to paste into Shopify.`,
+Write like a professional copywriter. Make it persuasive, specific, and ready to publish.`,
 
-    support: msg => `You are a professional customer support agent for a Shopify dropshipping store.
+  support: (msg, tone) => {
+    const t = {professional:'professional and warm',friendly:'friendly and casual',formal:'formal and corporate',apologetic:'highly apologetic and empathetic'}[tone]||'professional and warm';
+    return `You are a customer support agent for a Shopify dropshipping store. Your tone is ${t}.
 
-A customer sent:
+A customer wrote:
 "${msg}"
 
-Write a professional, warm, empathetic reply. Rules:
-- Under 150 words
-- Address their concern directly
-- Be solution-focused, not defensive
-- End positively
-- Sign off as: "Warm regards, The Support Team"
+Write a reply that:
+- Is under 150 words
+- Directly addresses their concern
+- Offers a clear solution or next step
+- Ends on a positive note
+- Signs off as: "Warm regards, The Support Team"
 
-Return only the reply — nothing else.`
+Return only the reply text — no extra commentary.`;
+  },
+
+  adcopy: (product, audience, platform) => {
+    const p = { tiktok:'TikTok (15–30 second video)', instagram:'Instagram Reels (15–30 second video)', facebook:'Facebook Ad', all:'TikTok, Instagram Reels, and Facebook' }[platform] || 'TikTok';
+    return `You are an expert e-commerce ad copywriter. Write high-converting ${p} ad copy for this product:
+
+Product: "${product}"
+Target audience: "${audience || 'general shoppers'}"
+
+${platform === 'all' ? `Write ad copy for all THREE platforms separately:
+
+--- TIKTOK (15–30 sec video script) ---
+Hook (0–3 sec): [attention-grabbing opener]
+Script: [punchy lines, 1 sentence each]
+CTA: [clear call to action]
+
+--- INSTAGRAM REELS (video script + caption) ---
+Hook (0–3 sec): [visual hook description]
+Script: [lines to say on camera]
+Caption: [150 chars max]
+Hashtags: [10 relevant hashtags]
+
+--- FACEBOOK AD ---
+Headline: [under 40 chars, stops the scroll]
+Primary text: [2-3 short paragraphs, benefit-focused]
+CTA button: [Shop Now / Learn More / Get Offer]` :
+platform === 'tiktok' ? `Write a TikTok video script:
+Hook (0–3 sec): [must stop the scroll instantly]
+Script: [6-8 punchy lines, each under 10 words]
+Visual cues: [what to show on screen]
+CTA: [end screen text]` :
+platform === 'instagram' ? `Write an Instagram Reels script + caption:
+Hook (0–3 sec): [visual hook]
+Script: [6-8 punchy lines]
+Caption: [150 chars, benefit-focused]
+Hashtags: [15 relevant hashtags]` :
+`Write a Facebook Ad:
+Headline: [under 40 chars]
+Primary text: [problem - solution - proof, 3 short paragraphs]
+Description: [under 30 chars]
+CTA: [button text]`}
+
+Be specific, benefit-focused, and conversion-optimised. No fluff.`;
+  },
+
+  email: (type, brand, details) => {
+    const types = { abandoned:'abandoned cart recovery (customer left without buying)', welcome:'welcome email for a new subscriber', flash:'flash sale or promotional campaign', winback:'win-back campaign for an inactive customer (60+ days since last purchase)', review:'post-purchase review request (sent 7 days after delivery)' };
+    return `You are an expert e-commerce email copywriter. Write a ${types[type] || 'marketing'} email for a Shopify dropshipping store.
+
+Store/Brand: "${brand || 'Our Store'}"
+${details ? 'Details: ' + details : ''}
+
+Use this exact format:
+
+SUBJECT LINE: (compelling, under 50 characters, creates urgency or curiosity)
+
+PREVIEW TEXT: (under 90 characters, complements the subject line)
+
+EMAIL BODY:
+[Write the full email — greeting, body paragraphs, and sign-off. Keep it concise (under 200 words). Benefit-focused. One clear message. Conversational tone.]
+
+CTA BUTTON TEXT: [3-5 words, action-oriented]
+
+Write like a human, not a robot. No generic filler. Make every word earn its place.`;
+  },
+
+  pricing: (product, cost, competitors) =>
+`You are a dropshipping pricing strategist. Analyse the optimal pricing strategy for:
+
+Product: "${product}"
+Supplier cost per unit: "${cost || 'not specified'}"
+${competitors ? 'Known competitor prices: ' + competitors : ''}
+
+Provide a complete pricing analysis:
+
+1. RECOMMENDED RETAIL PRICE
+   Recommended single unit price with psychological pricing applied, and the reasoning.
+
+2. MARGIN BREAKDOWN
+   Supplier cost to retail price to estimated profit per sale. Break-even point (units per month to cover £100 in ad spend).
+
+3. BUNDLE / UPSELL STRATEGY
+   A 2-pack or accessory bundle price and the expected uplift in average order value.
+
+4. PSYCHOLOGICAL PRICING TACTICS
+   Specific tactics that apply to this product and what to avoid for this price range.
+
+5. COMPETITIVE POSITIONING
+   Where to position vs competitors and whether to go premium, match, or undercut — and why.
+
+Be specific with numbers. Give a clear recommended price in both GBP and USD.`
 };
 
-// ── Tool runners ──────────────────────────────────
+/* ── Quick fill ── */
+function quickFill(id, val) { document.getElementById(id).value = val; }
+
+/* ── Tool runners ── */
 async function runResearch() {
-    const niche = document.getElementById('research-input').value.trim();
-    if (!niche) return alert('Please describe a niche or product type.');
-    if (niche.length > 300) return alert('Please keep it under 300 characters.');
-    const ids = { result:'research-result', error:'research-error', btn:'research-btn' };
-    setLoading(ids, true);
-    try {
-        showResult(ids, await callClaude(PROMPTS.research(niche)));
-    } catch(e) {
-        showError(ids, e.message);
-    } finally {
-        document.getElementById(ids.btn).disabled = false;
-    }
+  const niche = document.getElementById('research-input').value.trim();
+  if (!niche) { showToast('⚠ Please describe a niche first','red'); return; }
+  if (niche.length > 400) { showToast('⚠ Keep description under 400 characters','red'); return; }
+  setLoading('research', true);
+  setStream('research', '', true);
+  try {
+    await callClaude(PROMPTS.research(niche),
+      t => setStream('research', t, true),
+      t => {
+        setStream('research', t, false);
+        logActivity('Research: ' + niche.slice(0,35), '🔍', 'research');
+        if (SETTINGS.autosend && WEBHOOKS.research) sendToN8n('research', 'Product Research');
+        showToast('✓ Research complete','green');
+      });
+  } catch(e) { showErr('research', e.message); }
+  finally { setLoading('research', false); }
 }
 
 async function runListing() {
-    const product = document.getElementById('listing-name').value.trim();
-    const details = document.getElementById('listing-details').value.trim();
-    if (!product) return alert('Please enter a product name.');
-    if (product.length > 200) return alert('Product name too long.');
-    const ids = { result:'listing-result', error:'listing-error', btn:'listing-btn' };
-    setLoading(ids, true);
-    try {
-        showResult(ids, await callClaude(PROMPTS.listing(product, details.slice(0,500))));
-    } catch(e) {
-        showError(ids, e.message);
-    } finally {
-        document.getElementById(ids.btn).disabled = false;
-    }
+  const product = document.getElementById('listing-name').value.trim();
+  const details = document.getElementById('listing-details').value.trim();
+  if (!product) { showToast('⚠ Please enter a product name','red'); return; }
+  if (product.length > 200) { showToast('⚠ Product name is too long','red'); return; }
+  setLoading('listing', true);
+  setStream('listing', '', true);
+  try {
+    await callClaude(PROMPTS.listing(product, details.slice(0,500)),
+      t => setStream('listing', t, true),
+      t => {
+        setStream('listing', t, false);
+        logActivity('Listing: ' + product.slice(0,35), '📝', 'listing');
+        if (SHOPIFY_STORE) { document.getElementById('listing-push-btn').style.display=''; document.getElementById('listing-shopify-inline').style.display=''; }
+        if (SETTINGS.autosend && WEBHOOKS.listing) sendToN8n('listing', 'Listing Generator');
+        showToast('✓ Listing generated','green');
+      });
+  } catch(e) { showErr('listing', e.message); }
+  finally { setLoading('listing', false); }
 }
 
 async function runSupport() {
-    const msg = document.getElementById('support-input').value.trim();
-    if (!msg) return alert('Please paste a customer message.');
-    if (msg.length > 1000) return alert('Message too long — keep it under 1000 characters.');
-    const ids = { result:'support-result', error:'support-error', btn:'support-btn' };
-    setLoading(ids, true);
-    try {
-        showResult(ids, await callClaude(PROMPTS.support(msg)));
-    } catch(e) {
-        showError(ids, e.message);
-    } finally {
-        document.getElementById(ids.btn).disabled = false;
-    }
+  const msg  = document.getElementById('support-input').value.trim();
+  const tone = document.getElementById('support-tone').value;
+  if (!msg) { showToast('⚠ Please paste a customer message','red'); return; }
+  if (msg.length > 1500) { showToast('⚠ Message too long — keep it under 1500 characters','red'); return; }
+  setLoading('support', true);
+  setStream('support', '', true);
+  try {
+    await callClaude(PROMPTS.support(msg, tone),
+      t => setStream('support', t, true),
+      t => {
+        setStream('support', t, false);
+        logActivity('Support reply drafted', '💬', 'support');
+        if (SETTINGS.autosend && WEBHOOKS.support) sendToN8n('support', 'Customer Support');
+        showToast('✓ Reply ready','green');
+      });
+  } catch(e) { showErr('support', e.message); }
+  finally { setLoading('support', false); }
+}
+
+async function runAdCopy() {
+  const product  = document.getElementById('adcopy-product').value.trim();
+  const audience = document.getElementById('adcopy-audience').value.trim();
+  const platform = document.getElementById('adcopy-platform').value;
+  if (!product) { showToast('⚠ Please enter a product name','red'); return; }
+  setLoading('adcopy', true); setStream('adcopy', '', true);
+  try {
+    await callClaude(PROMPTS.adcopy(product, audience, platform),
+      t => setStream('adcopy', t, true),
+      t => {
+        setStream('adcopy', t, false);
+        logActivity('Ad Copy: ' + product.slice(0,35), '📣', 'adcopy');
+        if (SETTINGS.autosend && WEBHOOKS.adcopy) sendToN8n('adcopy', 'Ad Copy Generator');
+        showToast('✓ Ad copy ready','green');
+      });
+  } catch(e) { showErr('adcopy', e.message); }
+  finally { setLoading('adcopy', false); }
+}
+
+async function runEmail() {
+  const type    = document.getElementById('email-type').value;
+  const brand   = document.getElementById('email-brand').value.trim();
+  const details = document.getElementById('email-details').value.trim();
+  if (!brand) { showToast('⚠ Please enter your store or brand name','red'); return; }
+  setLoading('email', true); setStream('email', '', true);
+  try {
+    await callClaude(PROMPTS.email(type, brand, details),
+      t => setStream('email', t, true),
+      t => {
+        setStream('email', t, false);
+        logActivity('Email: ' + type + ' for ' + brand.slice(0,25), '✉', 'email');
+        if (SETTINGS.autosend && WEBHOOKS.email) sendToN8n('email', 'Email Marketing');
+        showToast('✓ Email written','green');
+      });
+  } catch(e) { showErr('email', e.message); }
+  finally { setLoading('email', false); }
+}
+
+async function runPricing() {
+  const product     = document.getElementById('pricing-product').value.trim();
+  const cost        = document.getElementById('pricing-cost').value.trim();
+  const competitors = document.getElementById('pricing-competitors').value.trim();
+  if (!product) { showToast('⚠ Please enter a product name','red'); return; }
+  setLoading('pricing', true); setStream('pricing', '', true);
+  try {
+    await callClaude(PROMPTS.pricing(product, cost, competitors),
+      t => setStream('pricing', t, true),
+      t => {
+        setStream('pricing', t, false);
+        logActivity('Pricing: ' + product.slice(0,35), '💰', 'pricing');
+        if (SETTINGS.autosend && WEBHOOKS.pricing) sendToN8n('pricing', 'Pricing Strategy');
+        showToast('✓ Pricing analysis complete','green');
+      });
+  } catch(e) { showErr('pricing', e.message); }
+  finally { setLoading('pricing', false); }
+}
+
+/* ── Download ── */
+function downloadFile() {
+  const blob = new Blob([document.documentElement.outerHTML], {type:'text/html'});
+  const url  = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'dropai.html'; a.click();
+  URL.revokeObjectURL(url);
 }
 </script>
-
 </body>
 </html>
